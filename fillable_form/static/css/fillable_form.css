@@ -1,0 +1,94 @@
+/* ── Learner View ──────────────────────────────── */
+
+.fillable-form-learner {
+  margin-bottom: var(--pgn-spacing-4, 1.5rem);
+}
+
+.fillable-form-field-label {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--pgn-color-dark, #212529);
+  margin-bottom: var(--pgn-spacing-2, 0.5rem);
+}
+
+.fillable-form-instructions {
+  color: var(--pgn-color-muted, #6c757d);
+  margin-bottom: var(--pgn-spacing-3, 1rem);
+  line-height: 1.5;
+}
+
+.fillable-form-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--pgn-spacing-3, 0.75rem);
+  border: 1px solid var(--pgn-color-border, #dee2e6);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+  font-family: inherit;
+  font-size: 1em;
+  line-height: 1.5;
+  resize: vertical;
+  background: var(--pgn-color-bg-light, #fff);
+  color: var(--pgn-color-dark, #212529);
+  transition: border-color 0.15s ease-in-out;
+}
+
+.fillable-form-textarea:focus {
+  outline: none;
+  border-color: var(--pgn-color-primary, #0075b4);
+  box-shadow: 0 0 0 0.2rem rgba(0, 117, 180, 0.15);
+}
+
+.fillable-form-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--pgn-spacing-2, 0.5rem);
+  min-height: 2em;
+}
+
+.fillable-form-saving,
+.fillable-form-saved,
+.fillable-form-error {
+  font-size: 0.85em;
+}
+
+.fillable-form-saving {
+  color: var(--pgn-color-muted, #6c757d);
+}
+
+.fillable-form-saved {
+  color: var(--pgn-color-success, #198754);
+}
+
+.fillable-form-error {
+  color: var(--pgn-color-danger, #dc3545);
+}
+
+.fillable-form-download-btn {
+  margin-left: auto;
+}
+
+/* ── Studio View ──────────────────────────────── */
+
+.fillable-form-studio {
+  padding: var(--pgn-spacing-3, 1rem);
+}
+
+.fillable-form-studio-error {
+  color: var(--pgn-color-danger, #dc3545);
+  background: var(--pgn-color-danger-bg, #f8d7da);
+  border: 1px solid var(--pgn-color-danger-border, #f1aeb5);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+  padding: var(--pgn-spacing-2, 0.5rem) var(--pgn-spacing-3, 0.75rem);
+  margin-bottom: var(--pgn-spacing-3, 1rem);
+}
+
+.fillable-form-studio-actions {
+  display: flex;
+  gap: var(--pgn-spacing-2, 0.5rem);
+  justify-content: flex-end;
+  margin-top: var(--pgn-spacing-4, 1.5rem);
+  padding-top: var(--pgn-spacing-3, 1rem);
+  border-top: 1px solid var(--pgn-color-border, #dee2e6);
+}
+

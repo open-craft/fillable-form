@@ -1,4 +1,5 @@
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries');
 
@@ -34,6 +35,9 @@ module.exports = [
       filename: 'fillable_form_learner.js',
       library: { name: 'FillableFormLearner', type: 'window', export: 'renderBlock' },
     },
+    optimization: {
+      minimizer: [new TerserPlugin({ extractComments: false })],
+    },
     resolve: { extensions: ['.tsx', '.ts', '.js', '.jsx'] },
     module: {
       rules: [
@@ -50,6 +54,9 @@ module.exports = [
       path: path.join(outputDir, 'js'),
       filename: 'fillable_form_studio.js',
       library: { name: 'FillableFormStudio', type: 'window', export: 'renderBlock' },
+    },
+    optimization: {
+      minimizer: [new TerserPlugin({ extractComments: false })],
     },
     resolve: { extensions: ['.tsx', '.ts', '.js', '.jsx'] },
     module: {
