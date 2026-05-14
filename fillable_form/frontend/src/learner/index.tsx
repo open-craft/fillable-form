@@ -9,7 +9,12 @@ export function renderBlock(
   element: HTMLElement,
   initData: LearnerConfig,
 ): Root {
-  root = createRoot(element);
+  // element may be a jQuery object from Studio's handleXBlockFragment
+  const container =
+    element && 'jquery' in element
+      ? (element as unknown as HTMLElement[])[0]
+      : element;
+  root = createRoot(container as HTMLElement);
   root.render(<LearnerView initData={initData} />);
   return root;
 }
