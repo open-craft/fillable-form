@@ -1,0 +1,308 @@
+import logging
+from typing import Any
+
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.http import Http404
+from django.utils.text import slugify
+from webob.response import Response
+
+from pydantic import BaseModel
+from xblock.core import XBlock
+from xblock.fields import Boolean, Integer, String, Scope
+from xblock.fragment import Fragment
+
+User = get_user_model()
+
+from .pdf_generator import (
+    FormGroupData,
+    Info,
+    Metadata,
+    Student,
+    generate_pdf,
+)
+from .services import (
+    get_form_group_options,
+    get_form_group_responses,
+    get_registered_form_fields,
+    get_response,
+    save_response,
+    save_form_field,
+)
+from .types import (
+    LearnerInitData,
+    SaveResponseRequest,
+    StudioInitData,
+    StudioSaveData,
+)
+
+logger = logging.getLogger(__name__)
+
+@XBlock.wants("user")
+class FillableFormXBlock(XBlock):
+    """
+    A fillable form field XBlock.
+
+    Students fill in text fields placed at any point in a course.
+    Responses across all fields in the same 'form group' can be
+    aggregated and downloaded as a single PDF.
+    """
+
+    display_name = String(
+        default="Fillable Form Field",
+        scope=Scope.settings,
+        help="Display name for this component in Studio",
+    )
+    instructions = String(
+        default="",
+        scope=Scope.settings,
+        help="Rich-text instructions shown above the text area",
+    )
+    form_group_id = String(
+        default="",
+        scope=Scope.settings,
+        help=(
+            "Identifier that links fields together across the course. "
+            "Fields with the same Form Group ID are aggregated in the "
+            "downloaded PDF."
+        ),
+    )
+    field_label = String(
+        default="",
+        scope=Scope.settings,
+        help="Label used as the section heading for this field in the PDF",
+    )
+    show_download_button = Boolean(
+        default=False,
+        scope=Scope.settings,
+        help="When checked, a download button appears on this field",
+    )
+    pdf_order = Integer(
+        default=0,
+        scope=Scope.settings,
+        help="Lower numbers appear first in the downloaded PDF",
+    )
+
+    def _get_xblock_user(self) -> Any:
+        """Resolve the current user from the XBlock user service."""
+        user_service = self.runtime.service(self, "user")
+        return user_service.get_current_user()
+
+    def _get_django_user(self) -> tuple[User | None, Any | None]:
+        """
+        Resolve the current user as a Django auth.User.
+
+        Returns a tuple of (django_user, xblock_user) to avoid
+        redundant resolution in callers that need both.
+        """
+        xblock_user = self._get_xblock_user()
+        if not xblock_user:
+            return None, None
+
+        user_id = xblock_user.opt_attrs.get("edx-platform.user_id")
+        if not user_id:
+            return None, xblock_user
+
+        try:
+            return User.objects.get(id=user_id), xblock_user
+        except User.DoesNotExist:
+            return None, xblock_user
+
+    @staticmethod
+    def _resolve_user_name(xblock_user: Any) -> str:
+        if not xblock_user:
+            return "Student"
+        return (
+            xblock_user.full_name
+            or xblock_user.opt_attrs.get("edx-platform.username")
+            or "Student"
+        )
+
+    def _render_fragment(self, div_prefix: str, js_bundle: str, js_initializer: str, init_data: BaseModel) -> Fragment:
+        """Build a Fragment with the standard CSS/JS loading pattern."""
+        fragment = Fragment()
+        fragment.add_content(
+            f'<div id="{div_prefix}-{self.scope_ids.usage_id}"></div>'
+        )
+
+        css_path = (
+            "static/css/fillable_form_studio.css" if self._is_legacy_studio()
+            else "static/css/fillable_form.css"
+        )
+        fragment.add_css_url(self.runtime.local_resource_url(self, css_path))
+        fragment.add_javascript_url(
+            self.runtime.local_resource_url(self, js_bundle)
+        )
+        fragment.initialize_js(js_initializer, init_data.model_dump(mode="json"))
+        return fragment
+
+    def student_view(self, context: dict[str, Any] | None = None) -> Fragment:
+        """Render the student-facing fillable form field."""
+        django_user, _ = self._get_django_user()
+
+        current_text = ""
+        if django_user:
+            current_text = get_response(django_user, self.scope_ids.usage_id)
+
+        init_data = LearnerInitData(
+            block_id=str(self.scope_ids.usage_id),
+            field_label=self.field_label,
+            instructions=self.instructions,
+            current_text=current_text,
+            show_download_button=self.show_download_button,
+            handler_urls={
+                "save_response": self.runtime.handler_url(
+                    self, "save_response"
+                ),
+                "download_pdf": self.runtime.handler_url(
+                    self, "download_pdf"
+                ),
+            },
+        )
+
+        return self._render_fragment(
+            "fillable-form-learner",
+            "static/js/fillable_form_learner.js",
+            "FillableFormLearner",
+            init_data,
+        )
+
+    @XBlock.json_handler
+    def save_response(self, data: dict[str, Any], suffix: str = "") -> dict[str, Any]:
+        """Save a student's response text. Payload: {"response_text": "..."}."""
+        request = SaveResponseRequest.model_validate(data)
+
+        django_user, _ = self._get_django_user()
+        if not django_user:
+            return {"success": False, "error": "User not authenticated."}
+
+        course_key = self.scope_ids.usage_id.course_key
+
+        response = save_response(
+            user=django_user,
+            course_key=course_key,
+            usage_key=self.scope_ids.usage_id,
+            form_group_id=self.form_group_id,
+            response_text=request.response_text,
+        )
+
+        logger.debug(
+            "Auto-saved response for user=%s usage=%s",
+            django_user.id, self.scope_ids.usage_id,
+        )
+
+        return {
+            "success": True,
+            "modified": response.modified.isoformat(),
+        }
+
+    @XBlock.handler
+    def download_pdf(self, request: Any, suffix: str = "") -> Response:
+        """Generate and return a PDF of all responses in this field's form group."""
+        django_user, xblock_user = self._get_django_user()
+        if not django_user:
+            raise Http404("User not authenticated.")
+
+        course_key = self.scope_ids.usage_id.course_key
+        fields = list(get_registered_form_fields(course_key, self.form_group_id))
+        response_map = get_form_group_responses(
+            django_user, course_key, [field.usage_key for field in fields]
+        )
+
+        form_data = FormGroupData(
+            form_group_id=self.form_group_id,
+            fields=[
+                {
+                    "field_label": f.field_label,
+                    "instructions": f.instructions,
+                    "response_text": response_map.get(str(f.usage_key), ""),
+                }
+                for f in fields
+            ],
+        )
+
+        user_email = xblock_user.emails[0] if xblock_user and xblock_user.emails else ""
+        user_name = self._resolve_user_name(xblock_user)
+
+        metadata = Metadata(
+            info=Info(title=self.display_name),
+            student=Student(email=user_email, name=user_name),
+        )
+
+        pdf_bytes = generate_pdf(metadata, form_data)
+
+        logger.info(
+            "PDF downloaded: user=%s course=%s form_group=%s fields=%d",
+            django_user.id, course_key, self.form_group_id, len(fields),
+        )
+
+        filename = slugify(f"{self.display_name}-{user_name}")
+        return Response(
+            pdf_bytes,
+            content_type="application/pdf",
+            content_disposition=f'attachment; filename="{filename}.pdf"',
+        )
+
+    def studio_view(self, context: dict[str, Any] | None = None) -> Fragment:
+        """Render the Studio editing interface."""
+        course_key = self.scope_ids.usage_id.course_key
+
+        init_data = StudioInitData(
+            block_id=str(self.scope_ids.usage_id),
+            display_name=self.display_name,
+            instructions=self.instructions,
+            form_group_id=self.form_group_id,
+            form_group_options=get_form_group_options(course_key),
+            field_label=self.field_label,
+            show_download_button=self.show_download_button,
+            pdf_order=self.pdf_order,
+            handler_urls={
+                "studio_submit": self.runtime.handler_url(
+                    self, "studio_submit"
+                ),
+            },
+        )
+
+        return self._render_fragment(
+            "fillable-form-studio",
+            "static/js/fillable_form_studio.js",
+            "FillableFormStudio",
+            init_data,
+        )
+
+    @XBlock.json_handler
+    def studio_submit(self, data: dict[str, Any], suffix: str = "") -> dict[str, Any]:
+        """Save Studio editor form data."""
+        django_user, _ = self._get_django_user()
+        if not django_user or not django_user.is_staff:
+            return {"success": False, "error": "Permission denied."}
+
+        validated = StudioSaveData.model_validate(data)
+
+        self.display_name = validated.display_name
+        self.instructions = validated.instructions
+        self.form_group_id = validated.form_group_id
+        self.field_label = validated.field_label
+        self.show_download_button = validated.show_download_button
+        self.pdf_order = validated.pdf_order
+
+        save_form_field(
+            course_key=self.scope_ids.usage_id.course_key,
+            usage_key=self.scope_ids.usage_id,
+            form_group_id=self.form_group_id,
+            field_label=self.field_label,
+            instructions=self.instructions,
+            pdf_order=self.pdf_order,
+        )
+
+        logger.info(
+            "Studio settings saved: user=%s block=%s",
+            django_user.id, self.scope_ids.usage_id,
+        )
+
+        return {"success": True}
+
+    @staticmethod
+    def _is_legacy_studio() -> bool:
+        """Detect whether we're rendering inside legacy Studio (not MFE)."""
+        return not getattr(settings, "ENABLE_STUDIO_MFE", False)

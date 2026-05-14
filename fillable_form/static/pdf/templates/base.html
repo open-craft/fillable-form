@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{ info.title }} - {{ student.email }}</title>
+    <meta charset="utf-8">
+    <meta name="generator" content="Fillable Form XBlock">
+    <meta name="dcterms.created" content="{{ time.isoformat() }}">
+</head>
+<body>
+    <header>
+        {% if branding.logo %}
+        <img class="logo" src="{{ branding.logo }}" alt="">
+        {% endif %}
+        <span class="title">{{ info.title }}</span>
+        <span class="details">
+            {{ student.name }} &lt;{{ student.email }}&gt;
+            — <time>{{ time.strftime('%Y-%m-%d %H:%M:%S UTC') }}</time>
+        </span>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer></footer>
+</body>
+</html>

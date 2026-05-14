@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+{% for field in data.fields %}
+<section class="field">
+    <h2>{{ field.field_label }}</h2>
+    {% if field.instructions %}
+    {# instructions come from author's TinyMCE — trusted HTML, not escaped #}
+    <div class="instructions">{{ field.instructions | safe }}</div>
+    {% endif %}
+    <div class="response">
+        {% if field.response_text %}
+        {{ field.response_text | e }}
+        {% else %}
+        <em>No response provided.</em>
+        {% endif %}
+    </div>
+</section>
+{% endfor %}
+{% endblock %}
