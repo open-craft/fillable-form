@@ -8,6 +8,7 @@ from weasyprint import CSS, HTML
 
 class Info(BaseModel):
     title: str
+    course_name: str = ""
 
 
 class Student(BaseModel):

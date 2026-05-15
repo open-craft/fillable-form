@@ -234,8 +234,14 @@ class FillableFormXBlock(XBlock):
         user_email = xblock_user.emails[0] if xblock_user and xblock_user.emails else ""
         user_name = self._resolve_user_name(xblock_user)
 
+        try:
+            from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+            course_name = CourseOverview.get_from_id(course_key).display_name
+        except Exception:
+            course_name = str(course_key)
+
         metadata = Metadata(
-            info=Info(title=self.display_name),
+            info=Info(title=self.display_name, course_name=course_name),
             student=Student(email=user_email, name=user_name),
         )
 
