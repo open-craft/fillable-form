@@ -17,11 +17,27 @@ export function LearnerView({ initData }: LearnerViewProps) {
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedTextRef = useRef<string>(current_text);
+  const currentTextRef = useRef<string>(current_text);
 
   const lastSavedTime = useMemo(
     () => (lastSaved ? new Date(lastSaved).toLocaleTimeString() : null),
     [lastSaved],
   );
+
+  const saveStatus = useMemo(() => {
+    if (saveState === 'saving') {
+      return 'Saving changes...';
+    }
+    if (saveState === 'saved') {
+      return lastSavedTime
+        ? `Changes saved automatically at ${lastSavedTime}. You can close this page and return anytime.`
+        : 'Changes saved automatically. You can close this page and return anytime.';
+    }
+    if (saveState === 'error') {
+      return 'Save failed. Your text is preserved in this field.';
+    }
+    return 'Changes saved automatically. You can close this page and return anytime.';
+  }, [lastSavedTime, saveState]);
 
   useEffect(() => {
     return () => {
@@ -39,19 +55,20 @@ export function LearnerView({ initData }: LearnerViewProps) {
         { response_text: textToSave },
       );
       if (result.success) {
-        setSaveState('saved');
+        setSaveState(currentTextRef.current === textToSave ? 'saved' : 'idle');
         setLastSaved(result.modified || null);
         lastSavedTextRef.current = textToSave;
       } else {
-        setSaveState('error');
+        setSaveState(currentTextRef.current === textToSave ? 'error' : 'idle');
       }
     } catch {
-      setSaveState('error');
+      setSaveState(currentTextRef.current === textToSave ? 'error' : 'idle');
     }
   }, [handler_urls.save_response]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
+    currentTextRef.current = newText;
 
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -87,10 +104,6 @@ export function LearnerView({ initData }: LearnerViewProps) {
 
   return (
     <div className="fillable-form-learner" data-block-id={block_id}>
-      {field_label && (
-        <h3 className="fillable-form-field-label">{field_label}</h3>
-      )}
-
       {instructions && (
         <div
           className="fillable-form-instructions"
@@ -98,34 +111,32 @@ export function LearnerView({ initData }: LearnerViewProps) {
         />
       )}
 
-      <textarea
-        className="fillable-form-textarea"
-        value={text}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        placeholder="Type your response..."
-        rows={6}
-        aria-label={field_label || 'Form field'}
-      />
-
-      <div className="fillable-form-meta">
-        {saveState === 'saving' && (
-          <span className="fillable-form-saving">
-            Saving...
-          </span>
-        )}
-        {saveState === 'saved' && (
-          <span className="fillable-form-saved">
-            Saved{lastSavedTime ? ` at ${lastSavedTime}` : ''}
-          </span>
-        )}
-        {saveState === 'error' && (
-          <span className="fillable-form-error">
-            Save failed — your text is preserved in this field.
-          </span>
+      <div className="fillable-form-response">
+        {field_label && (
+          <h3 className="fillable-form-field-label">{field_label}</h3>
         )}
 
-        {downloadUrl && (
+        <textarea
+          className="fillable-form-textarea"
+          value={text}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder="Type your response..."
+          rows={6}
+          aria-label={field_label || 'Form field'}
+        />
+
+        <div className="fillable-form-meta">
+          <span className={`fillable-form-status fillable-form-status-${saveState}`}>
+            {saveStatus}
+          </span>
+        </div>
+      </div>
+
+      {downloadUrl && (
+        <section className="fillable-form-download-panel" aria-labelledby={`${block_id}-download-title`}>
+          <h3 id={`${block_id}-download-title`}>Download Exercise</h3>
+          <p>Your response is part of a collection. Click Download to save them all as a PDF.</p>
           <Button
             as="a"
             href={downloadUrl}
@@ -133,10 +144,11 @@ export function LearnerView({ initData }: LearnerViewProps) {
             variant="primary"
             className="fillable-form-download-btn"
           >
-            Download Form
+            <span aria-hidden="true" className="fillable-form-download-icon" />
+            Download PDF
           </Button>
-        )}
-      </div>
+        </section>
+      )}
     </div>
   );
 }

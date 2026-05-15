@@ -26,15 +26,25 @@ import 'tinymce/skins/ui/oxide/content';
 interface TinyMceEditorProps {
   value: string;
   onChange: (value: string) => void;
+  id?: string;
+  ariaLabel?: string;
 }
 
-export function TinyMceEditor({ value, onChange }: TinyMceEditorProps) {
+export function TinyMceEditor({
+  value,
+  onChange,
+  id,
+  ariaLabel,
+}: TinyMceEditorProps) {
   return (
     <Editor
       licenseKey="gpl"
+      id={id}
       value={value}
       onEditorChange={(newValue) => onChange(newValue)}
       init={{
+        a11y_advanced_options: true,
+        iframe_aria_text: ariaLabel,
         promotion: false,
         menubar: false,
         height: 300,

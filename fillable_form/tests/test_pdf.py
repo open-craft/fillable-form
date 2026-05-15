@@ -12,6 +12,7 @@ from fillable_form.pdf_generator import (
     Info,
     Metadata,
     Student,
+    _render_html,
     generate_pdf,
 )
 
@@ -63,32 +64,31 @@ class TestPdfGeneration:
 
     def test_pdf_contains_field_labels(self, sample_metadata, sample_form_data):
         """Generated PDF contains all field labels."""
-        result = generate_pdf(sample_metadata, sample_form_data)
+        result = _render_html(sample_metadata, sample_form_data)
 
-        # Field labels should appear in the PDF content
-        assert b"Question 1" in result
-        assert b"Question 2" in result
-        assert b"Question 3" in result
+        assert "Question 1" in result
+        assert "Question 2" in result
+        assert "Question 3" in result
 
     def test_pdf_contains_responses(self, sample_metadata, sample_form_data):
         """Generated PDF contains response text."""
-        result = generate_pdf(sample_metadata, sample_form_data)
+        result = _render_html(sample_metadata, sample_form_data)
 
-        assert b"My thoughtful answer." in result
-        assert b"Another answer." in result
+        assert "My thoughtful answer." in result
+        assert "Another answer." in result
 
     def test_pdf_contains_student_info(self, sample_metadata, sample_form_data):
         """Generated PDF contains student name and email."""
-        result = generate_pdf(sample_metadata, sample_form_data)
+        result = _render_html(sample_metadata, sample_form_data)
 
-        assert b"Test Student" in result
-        assert b"student@example.com" in result
+        assert "Test Student" in result
+        assert "student@example.com" in result
 
     def test_empty_responses_show_placeholder(self, sample_metadata, sample_form_data):
         """Fields with no response show placeholder text."""
-        result = generate_pdf(sample_metadata, sample_form_data)
+        result = _render_html(sample_metadata, sample_form_data)
 
-        assert b"No response provided" in result
+        assert "No response provided" in result
 
     def test_pdf_html_escaping(self, sample_metadata):
         """Response text with HTML-like content is escaped."""

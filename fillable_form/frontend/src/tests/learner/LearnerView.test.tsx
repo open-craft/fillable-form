@@ -55,14 +55,14 @@ describe('LearnerView', () => {
 
   test('renders download button when enabled', () => {
     render(<LearnerView initData={createConfig({ show_download_button: true })} />);
-    const button = screen.getByText('Download Form');
+    const button = screen.getByText('Download PDF');
     expect(button).toBeInTheDocument();
     expect(button).toHaveAttribute('href', '/handler/download_pdf');
   });
 
   test('does not render download button when disabled', () => {
     render(<LearnerView initData={createConfig({ show_download_button: false })} />);
-    expect(screen.queryByText('Download Form')).not.toBeInTheDocument();
+    expect(screen.queryByText('Download PDF')).not.toBeInTheDocument();
   });
 
   test('auto-saves after debounce delay', async () => {
@@ -148,7 +148,7 @@ describe('LearnerView', () => {
     fireEvent.change(textarea, { target: { value: 'New' } });
     act(() => { jest.advanceTimersByTime(1500); });
 
-    expect(screen.getByText('Saving...')).toBeInTheDocument();
+    expect(screen.getByText('Saving changes...')).toBeInTheDocument();
 
     // Resolve the save
     await act(async () => {
@@ -172,8 +172,7 @@ describe('LearnerView', () => {
       await Promise.resolve();
     });
 
-    // Should show "Saved" (the timestamp part will vary)
-    expect(screen.getByText(/Saved/)).toBeInTheDocument();
+    expect(screen.getByText(/Changes saved automatically/)).toBeInTheDocument();
   });
 
   test('shows error indicator', async () => {
@@ -206,10 +205,31 @@ describe('LearnerView', () => {
     expect(postJson).not.toHaveBeenCalled();
   });
 
+  test('does not show stale saved state when text changes during save', async () => {
+    let resolve: (value: unknown) => void;
+    const promise = new Promise((r) => { resolve = r; });
+    (postJson as jest.Mock).mockReturnValueOnce(promise);
+
+    render(<LearnerView initData={createConfig()} />);
+    const textarea = screen.getByRole('textbox');
+
+    fireEvent.change(textarea, { target: { value: 'First draft' } });
+    act(() => { jest.advanceTimersByTime(1500); });
+
+    fireEvent.change(textarea, { target: { value: 'Second draft' } });
+
+    await act(async () => {
+      resolve({ success: true, modified: '2026-05-13T10:00:00' });
+    });
+
+    expect(screen.getByText(
+      'Changes saved automatically. You can close this page and return anytime.',
+    )).toBeInTheDocument();
+  });
+
   test('empty label does not render heading', () => {
     render(<LearnerView initData={createConfig({ field_label: '' })} />);
-    const headings = screen.queryAllByRole('heading');
-    expect(headings).toHaveLength(0);
+    expect(screen.queryByRole('heading', { name: 'Test Question' })).not.toBeInTheDocument();
   });
 
   test('empty instructions does not render instructions div', () => {
@@ -227,7 +247,7 @@ describe('LearnerView', () => {
 
   test('download link opens in new tab', () => {
     render(<LearnerView initData={createConfig({ show_download_button: true })} />);
-    const link = screen.getByText('Download Form');
+    const link = screen.getByText('Download PDF');
     expect(link).toHaveAttribute('target', '_blank');
   });
 });

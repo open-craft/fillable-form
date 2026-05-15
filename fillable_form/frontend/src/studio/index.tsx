@@ -18,6 +18,12 @@ export function renderBlock(
     element && 'jquery' in element
       ? (element as unknown as HTMLElement[])[0]
       : element;
+
+  const modalBody = (container as HTMLElement).parentElement?.parentElement;
+  if (modalBody instanceof HTMLElement) {
+    modalBody.style.minHeight = '635px';
+  }
+
   root = createRoot(container as HTMLElement);
   root.render(<StudioView initData={initData} runtime={runtime} />);
   return root;

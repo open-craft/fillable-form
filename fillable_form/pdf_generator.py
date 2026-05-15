@@ -60,13 +60,18 @@ def _get_css() -> str:
     return _CACHED_CSS
 
 
-def generate_pdf(metadata: Metadata, data: FormGroupData) -> bytes:
-    """Render the form group data into a PDF."""
-    html = _JINJA_ENV.get_template(data.template_file()).render(
+def _render_html(metadata: Metadata, data: FormGroupData) -> str:
+    """Render the form group data into HTML."""
+    return _JINJA_ENV.get_template(data.template_file()).render(
         data=data.model_dump(),
         time=datetime.now(timezone.utc),
         **metadata.model_dump(),
     )
+
+
+def generate_pdf(metadata: Metadata, data: FormGroupData) -> bytes:
+    """Render the form group data into a PDF."""
+    html = _render_html(metadata, data)
 
     return HTML(string=html).write_pdf(
         stylesheets=[CSS(string=_get_css())],

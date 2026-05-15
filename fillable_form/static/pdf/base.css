@@ -1,10 +1,10 @@
 :root {
-    --header-height: 1.5cm;
-    --footer-height: 0.7cm;
-    --margin-base: 0.5cm;
-    --margin-page-top: calc(var(--header-height) + var(--margin-base));
-    --margin-page-bottom: calc(var(--footer-height) + var(--margin-base));
-    --font-size-base: 10pt;
+    --header-height: 1.8cm;
+    --footer-height: 0.65cm;
+    --margin-base: 0.75cm;
+    --margin-page-top: 2.55cm;
+    --margin-page-bottom: 1.4cm;
+    --font-size-base: 9pt;
 }
 
 @page {
@@ -13,7 +13,8 @@
     margin-bottom: var(--margin-page-bottom);
 
     @bottom-right {
-        font-size: calc(var(--font-size-base) * 0.9);
+        color: #001b3a;
+        font-size: 8pt;
         content: counter(page);
         padding-right: var(--margin-base);
     }
@@ -22,66 +23,127 @@
 body {
     font-family: "Inter", "DejaVu Sans", sans-serif;
     font-size: var(--font-size-base);
-    line-height: 1.6;
-    color: #212529;
+    line-height: 1.55;
+    color: #001b3a;
+    margin: 0;
 }
 
 header {
     position: fixed;
-    top: calc(-1 * var(--margin-page-top));
+    top: -2.55cm;
     height: var(--header-height);
     width: 100%;
-    display: flex;
+    background: #ffffff;
+    color: #001b3a;
+}
+
+.header-primary {
     align-items: center;
-    gap: 1em;
-    border-bottom: 2px solid #0075b4;
+    background: #f3f3f3;
+    display: flex;
+    height: 1.05cm;
     padding: 0 var(--margin-base);
 }
 
+.brand {
+    align-items: center;
+    display: flex;
+}
+
+.logo {
+    margin-right: 0.28cm;
+    max-height: 0.65cm;
+    max-width: 2.4cm;
+}
+
+.wordmark {
+    color: #0075b4;
+    font-size: 18pt;
+    font-weight: 800;
+    letter-spacing: 0;
+    margin-right: 0.28cm;
+}
+
 header .title {
-    font-weight: bold;
-    font-size: 1.2em;
+    background: #ffffff;
+    border: 1px solid #cfd8e3;
+    border-radius: 2px;
+    color: #001b3a;
+    font-size: 7pt;
+    line-height: 1;
+    padding: 0.08cm 0.15cm;
 }
 
 header .details {
     margin-left: auto;
-    font-size: 0.8em;
-    color: #6c757d;
+    color: #001b3a;
+    font-size: 7.5pt;
+    font-weight: 700;
+}
+
+.header-secondary {
+    align-items: center;
+    border-bottom: 1px solid #ededed;
+    display: flex;
+    font-size: 8.5pt;
+    height: 0.75cm;
+    justify-content: space-between;
+    padding: 0 var(--margin-base);
 }
 
 footer {
     position: fixed;
-    bottom: calc(-1 * var(--margin-page-bottom));
+    bottom: -1.4cm;
     height: var(--footer-height);
     width: 100%;
-    background: #f8f9fa;
+    background: #f3f3f3;
 }
 
 main {
-    margin-top: calc(var(--margin-base) / 2);
+    margin-top: 0;
+    padding: 0 var(--margin-base);
+}
+
+h1 {
+    color: #001b3a;
+    font-size: 16pt;
+    line-height: 1.2;
+    margin: 0 0 0.55cm;
 }
 
 .field {
-    margin-bottom: 1.5em;
-    padding-bottom: 1em;
-    border-bottom: 1px solid #dee2e6;
+    break-inside: avoid;
+    margin-bottom: 0.55cm;
 }
 
 .field h2 {
-    font-size: 1.1em;
-    color: #0075b4;
-    margin-bottom: 0.3em;
-}
-
-.instructions {
-    font-style: italic;
-    color: #6c757d;
-    margin-bottom: 0.5em;
+    color: #001b3a;
+    font-size: 9pt;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 0.18cm;
 }
 
 .response {
+    background: #f4f4f4;
+    border: 0;
+    border-radius: 4px;
+    color: #001b3a;
+    padding: 0.45cm;
+}
+
+.field:nth-of-type(even) .response {
+    background: #ffffff;
+    border: 1px solid #c9cfd6;
+}
+
+.response-meta {
+    font-size: 7pt;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.38cm;
+}
+
+.response-text {
     white-space: pre-wrap;
-    background: #f8f9fa;
-    padding: 0.8em;
-    border-radius: 0.25rem;
 }

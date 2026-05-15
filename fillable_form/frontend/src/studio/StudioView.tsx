@@ -43,6 +43,10 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
   };
 
   const handleSave = async () => {
+    if (saving) {
+      return;
+    }
+
     if (pdfOrder.trim() === '') {
       notifyError('PDF Order must be a non-negative whole number.');
       return;
@@ -88,118 +92,123 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
   };
 
   return (
-    <div className="fillable-form-studio">
-      <Form.Group>
-        <Form.Label htmlFor={fieldId(block_id, 'display-name')}>
-          Display Name
-        </Form.Label>
-        <Form.Control
-          id={fieldId(block_id, 'display-name')}
-          type="text"
-          value={displayName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setDisplayName(e.target.value)
-          }
-        />
-      </Form.Group>
+    <div className="fillable-form-block">
+      <div className="fillable-form-studio">
+        <Form.Group>
+          <Form.Label htmlFor={fieldId(block_id, 'display-name')}>
+            Display Name
+          </Form.Label>
+          <Form.Control
+            id={fieldId(block_id, 'display-name')}
+            type="text"
+            value={displayName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setDisplayName(e.target.value)
+            }
+          />
+        </Form.Group>
 
-      <Form.Group>
-        <Form.Label htmlFor={fieldId(block_id, 'field-label')}>
-          Field Label
-        </Form.Label>
-        <Form.Control
-          id={fieldId(block_id, 'field-label')}
-          type="text"
-          value={fieldLabel}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setFieldLabel(e.target.value)
-          }
-        />
-        <Form.Control.Feedback>
-          This label appears as a section heading in the downloaded PDF.
-        </Form.Control.Feedback>
-      </Form.Group>
+        <Form.Group>
+          <Form.Label htmlFor={fieldId(block_id, 'instructions')}>
+            Introduction
+          </Form.Label>
+          <Form.Control.Feedback>
+            The introduction shows above the answer field. Include any instructions the learner might need
+          </Form.Control.Feedback>
+          <TinyMceEditor
+            id={fieldId(block_id, 'instructions')}
+            ariaLabel="Introduction"
+            value={instructionsText}
+            onChange={setInstructionsText}
+          />
+        </Form.Group>
 
-      <Form.Group>
-        <Form.Label htmlFor={fieldId(block_id, 'pdf-order')}>
-          PDF Order
-        </Form.Label>
-        <Form.Control
-          id={fieldId(block_id, 'pdf-order')}
-          type="number"
-          min={0}
-          value={pdfOrder}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setPdfOrder(e.target.value)
-          }
-        />
-        <Form.Control.Feedback>
-          Lower numbers appear first in the downloaded PDF. Use gaps like 10, 20, 30 to leave room for future fields.
-        </Form.Control.Feedback>
-      </Form.Group>
+        <Form.Group>
+          <Form.Label htmlFor={fieldId(block_id, 'field-label')}>
+            Answer Field Label
+          </Form.Label>
+          <Form.Control
+            id={fieldId(block_id, 'field-label')}
+            type="text"
+            value={fieldLabel}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setFieldLabel(e.target.value)
+            }
+          />
+          <Form.Control.Feedback>
+            Provide a name for the field learners use to answer the question
+          </Form.Control.Feedback>
+        </Form.Group>
 
-      <Form.Group>
-        <Form.Label htmlFor={fieldId(block_id, 'form-group-id')}>
-          Form Group ID
-        </Form.Label>
-        <Creatable
-          inputId={fieldId(block_id, 'form-group-id')}
-          isClearable
-          options={groupOptions}
-          value={formGroupId ? { value: formGroupId, label: formGroupId } : null}
-          onChange={(option) => setFormGroupId(option?.value || '')}
-          placeholder="Select or type a new group..."
-          formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
-        />
-        <Form.Control.Feedback>
-          Fields with the same Form Group ID are aggregated in the downloaded PDF.
-        </Form.Control.Feedback>
-      </Form.Group>
+        <Form.Group>
+          <Form.Label htmlFor={fieldId(block_id, 'form-group-id')}>
+            Form Group ID
+          </Form.Label>
+          <Creatable
+            inputId={fieldId(block_id, 'form-group-id')}
+            classNamePrefix="fillable-form-select"
+            isClearable
+            options={groupOptions}
+            value={formGroupId ? { value: formGroupId, label: formGroupId } : null}
+            onChange={(option) => setFormGroupId(option?.value || '')}
+            placeholder="Add group ID"
+            formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
+          />
+          <Form.Control.Feedback>
+            Select a Group ID to connect fields across units for a PDF version. Create a new Group ID by typing the title and selecting "create" from the bottom of the list.
+          </Form.Control.Feedback>
+        </Form.Group>
 
-      <Form.Group>
-        <Form.Label htmlFor={fieldId(block_id, 'instructions')}>
-          Instructions
-        </Form.Label>
-        <TinyMceEditor
-          value={instructionsText}
-          onChange={setInstructionsText}
-        />
-        <Form.Control.Feedback>
-          Rich-text instructions shown to students above the text area. HTML is supported.
-        </Form.Control.Feedback>
-      </Form.Group>
+        <Form.Group>
+          <Form.Label htmlFor={fieldId(block_id, 'pdf-order')}>
+            PDF Order
+          </Form.Label>
+          <Form.Control
+            id={fieldId(block_id, 'pdf-order')}
+            type="number"
+            min={0}
+            value={pdfOrder}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setPdfOrder(e.target.value)
+            }
+          />
+          <Form.Control.Feedback>
+            Lower numbers appear first in the downloaded PDF. Use gaps like 10, 20, 30 to leave room for future fields.
+          </Form.Control.Feedback>
+        </Form.Group>
 
-      <Form.Group>
-        <Form.Checkbox
-          id={fieldId(block_id, 'show-download')}
-          checked={showDownloadButton}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setShowDownloadButton(e.target.checked)
-          }
-        >
-          Show download button on this field
-        </Form.Checkbox>
-      </Form.Group>
+        <Form.Group>
+          <Form.Checkbox
+            id={fieldId(block_id, 'show-download')}
+            checked={showDownloadButton}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setShowDownloadButton(e.target.checked)
+            }
+          >
+            Show PDF download button on this field
+          </Form.Checkbox>
+        </Form.Group>
 
-      {error && (
-        <div className="fillable-form-studio-error">{error}</div>
-      )}
+        {error && (
+          <div className="fillable-form-studio-error">{error}</div>
+        )}
 
-      <div className="fillable-form-studio-actions">
-        <Button variant="secondary" onClick={handleCancel}>
-          Cancel
-        </Button>
-        <StatefulButton
-          variant="primary"
-          onClick={handleSave}
-          state={saving ? 'pending' : 'default'}
-          labels={{
-            default: 'Save',
-            pending: 'Saving...',
-            complete: 'Saved',
-            error: 'Error',
-          }}
-        />
+        <div className="fillable-form-studio-actions">
+          <StatefulButton
+            variant="primary"
+            onClick={handleSave}
+            state={saving ? 'pending' : 'default'}
+            labels={{
+              default: 'Save',
+              pending: 'Saving...',
+              complete: 'Saved',
+              error: 'Error',
+            }}
+          />
+          <Button variant="link" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -8,14 +8,23 @@
 </head>
 <body>
     <header>
-        {% if branding.logo %}
-        <img class="logo" src="{{ branding.logo }}" alt="">
-        {% endif %}
-        <span class="title">{{ info.title }}</span>
-        <span class="details">
-            {{ student.name }} &lt;{{ student.email }}&gt;
-            — <time>{{ time.strftime('%Y-%m-%d %H:%M:%S UTC') }}</time>
-        </span>
+        <div class="header-primary">
+            <div class="brand">
+                {% if branding.logo %}
+                <img class="logo" src="{{ branding.logo }}" alt="">
+                {% endif %}
+                <span class="title">{{ info.title }}</span>
+            </div>
+            <div class="details">
+                <time>{{ time.day }} {{ time.strftime('%B %Y, %I:%M%p UTC') }}</time>
+                <span>|</span>
+                <span>{{ student.email }}</span>
+            </div>
+        </div>
+        <div class="header-secondary">
+            <span>Course Name</span>
+            <span>{{ student.name }}</span>
+        </div>
     </header>
 
     <main>

@@ -9,9 +9,17 @@ jest.mock('../../common/api', () => ({
 
 // Mock the TinyMCE editor to avoid loading actual TinyMCE in tests
 jest.mock('../../studio/TinyMceEditor', () => ({
-  TinyMceEditor: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
+  TinyMceEditor: ({
+    value,
+    onChange,
+    ariaLabel,
+  }: {
+    value: string;
+    onChange: (v: string) => void;
+    ariaLabel?: string;
+  }) => (
     <textarea
-      aria-label="Instructions"
+      aria-label={ariaLabel || 'Instructions'}
       value={value}
       onChange={(e) => onChange(e.target.value)}
     />
@@ -75,11 +83,11 @@ describe('StudioView', () => {
     render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
 
     expect(screen.getByLabelText('Display Name')).toBeInTheDocument();
-    expect(screen.getByLabelText('Field Label')).toBeInTheDocument();
-    expect(screen.getByLabelText('PDF Order')).toBeInTheDocument();
+    expect(screen.getByLabelText('Answer Field Label')).toBeInTheDocument();
     expect(screen.getByLabelText('Form Group ID')).toBeInTheDocument();
-    expect(screen.getByLabelText('Instructions')).toBeInTheDocument();
-    expect(screen.getByText('Show download button on this field')).toBeInTheDocument();
+    expect(screen.getByLabelText('PDF Order')).toBeInTheDocument();
+    expect(screen.getByLabelText('Introduction')).toBeInTheDocument();
+    expect(screen.getByText('Show PDF download button on this field')).toBeInTheDocument();
     expect(screen.getByText('Save')).toBeInTheDocument();
     expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
@@ -88,9 +96,9 @@ describe('StudioView', () => {
     render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
 
     expect(screen.getByLabelText('Display Name')).toHaveValue('My Form Field');
-    expect(screen.getByLabelText('Field Label')).toHaveValue('Section Title');
+    expect(screen.getByLabelText('Answer Field Label')).toHaveValue('Section Title');
     expect(screen.getByLabelText('PDF Order')).toHaveValue(10);
-    expect(screen.getByLabelText('Instructions')).toHaveValue('<p>Instructions here</p>');
+    expect(screen.getByLabelText('Introduction')).toHaveValue('<p>Instructions here</p>');
   });
 
   test('calls studio_submit on save', async () => {
@@ -117,6 +125,20 @@ describe('StudioView', () => {
     );
   });
 
+  test('does not submit invalid PDF order from init data', async () => {
+    const runtime = createRuntime();
+
+    render(<StudioView initData={createConfig({ pdf_order: -1 })} runtime={runtime} />);
+
+    fireEvent.click(screen.getByText('Save'));
+
+    expect(postJson).not.toHaveBeenCalled();
+    expect(runtime.notify).toHaveBeenCalledWith('error', {
+      title: 'Save Error',
+      message: 'PDF Order must be a non-negative whole number.',
+    });
+  });
+
   test('submits changed PDF order', async () => {
     (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
 
@@ -135,7 +157,7 @@ describe('StudioView', () => {
     );
   });
 
-  test('does not submit invalid PDF order', async () => {
+  test('does not submit blank PDF order', async () => {
     const runtime = createRuntime();
 
     render(<StudioView initData={createConfig()} runtime={runtime} />);
@@ -159,6 +181,23 @@ describe('StudioView', () => {
     fireEvent.click(screen.getByText('Save'));
 
     expect(runtime.notify).toHaveBeenCalledWith('save', { state: 'start' });
+  });
+
+  test('ignores duplicate save clicks while saving', async () => {
+    let resolve: (value: unknown) => void;
+    const promise = new Promise((r) => { resolve = r; });
+    (postJson as jest.Mock).mockReturnValueOnce(promise);
+
+    render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+
+    fireEvent.click(screen.getByText('Save'));
+    fireEvent.click(screen.getByText('Saving...'));
+
+    expect(postJson).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      resolve({ success: true });
+    });
   });
 
   test('notifies runtime on save success', async () => {
@@ -245,21 +284,21 @@ describe('StudioView', () => {
   test('shows help text for form group ID', () => {
     render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
     expect(screen.getByText(
-      'Fields with the same Form Group ID are aggregated in the downloaded PDF.',
+      'Select a Group ID to connect fields across units for a PDF version. Create a new Group ID by typing the title and selecting "create" from the bottom of the list.',
     )).toBeInTheDocument();
   });
 
   test('shows help text for field label', () => {
     render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
     expect(screen.getByText(
-      'This label appears as a section heading in the downloaded PDF.',
+      'Provide a name for the field learners use to answer the question',
     )).toBeInTheDocument();
   });
 
   test('toggles download button checkbox', () => {
     render(<StudioView initData={createConfig({ show_download_button: false })} runtime={createRuntime()} />);
 
-    const checkbox = screen.getByLabelText('Show download button on this field');
+    const checkbox = screen.getByLabelText('Show PDF download button on this field');
     expect(checkbox).not.toBeChecked();
 
     fireEvent.click(checkbox);

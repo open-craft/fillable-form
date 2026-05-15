@@ -118,11 +118,12 @@ class FillableFormXBlock(XBlock):
             or "Student"
         )
 
-    def _render_fragment(self, div_prefix: str, js_bundle: str, js_initializer: str, init_data: BaseModel) -> Fragment:
+    def _render_fragment(self, div_prefix: str, js_bundle: str, js_initializer: str, init_data: BaseModel, div_class: str = "") -> Fragment:
         """Build a Fragment with the standard CSS/JS loading pattern."""
         fragment = Fragment()
+        class_attr = f' class="{div_class}"' if div_class else ""
         fragment.add_content(
-            f'<div id="{div_prefix}-{self.scope_ids.usage_id}"></div>'
+            f'<div id="{div_prefix}-{self.scope_ids.usage_id}"{class_attr}></div>'
         )
 
         css_path = (
@@ -268,6 +269,7 @@ class FillableFormXBlock(XBlock):
             "static/js/fillable_form_studio.js",
             "FillableFormStudio",
             init_data,
+            div_class="editor-with-buttons",
         )
 
     @XBlock.json_handler
