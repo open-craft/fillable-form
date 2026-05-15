@@ -113,7 +113,7 @@ export function LearnerView({ initData }: LearnerViewProps) {
 
       <div className="fillable-form-response">
         {field_label && (
-          <h3 className="fillable-form-field-label">{field_label}</h3>
+          <p className="fillable-form-field-label">{field_label}</p>
         )}
 
         <textarea

@@ -1,26 +1,46 @@
 .fillable-form-block .fillable-form-learner {
+  box-sizing: border-box;
   color: var(--pgn-color-body-base, #1f2933);
   font-size: 16px;
-  margin: 0 auto var(--pgn-spacing-spacer-5, var(--pgn-spacing-5, 4rem));
+  line-height: 24px;
+  margin: 0 auto 80px;
   max-width: 1045px;
-  padding: var(--pgn-spacing-spacer-4, 1.4rem) var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 1rem)) 0;
+  padding: 0;
+  width: 100%;
 }
 
 .fillable-form-block .fillable-form-instructions {
   color: var(--pgn-color-body-base, #2f2f2f);
-  line-height: 1.55;
-  margin: 0 0 var(--pgn-spacing-spacer-5, 2.7rem);
+  font-size: 16px;
+  line-height: 24px;
+  margin: 0 0 42px;
 }
 
+.fillable-form-block .fillable-form-instructions h1,
+.fillable-form-block .fillable-form-instructions h2,
+.fillable-form-block .fillable-form-instructions h3 {
+  color: var(--pgn-color-gray-700, #444);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+  margin: 0 0 12px;
+}
 
 .fillable-form-block .fillable-form-instructions p {
-  margin: 0 0 var(--pgn-spacing-spacer-3, 1rem);
+  margin: 0 0 8px;
 }
 
 .fillable-form-block .fillable-form-response {
-  margin-bottom: var(--pgn-spacing-spacer-5, 2.7rem);
+  margin-bottom: 42px;
 }
 
+.fillable-form-block .fillable-form-field-label {
+  color: var(--pgn-color-body-base, #333);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24px;
+  margin: 0 0 10px;
+}
 
 .fillable-form-block .fillable-form-textarea {
   background: var(--pgn-color-form-input-bg-base, var(--pgn-color-white, #fff));
@@ -30,9 +50,9 @@
   display: block;
   font-family: inherit;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 24px;
   min-height: 253px;
-  padding: var(--pgn-spacing-spacer-4, 1.35rem) var(--pgn-spacing-spacer-4, 1.45rem);
+  padding: 21px 22px;
   resize: vertical;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   width: 100%;
@@ -46,9 +66,10 @@
 
 .fillable-form-block .fillable-form-meta {
   color: var(--pgn-color-text-muted, #666);
-  font-size: 13px;
-  margin-top: var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 1rem));
-  min-height: 1.5rem;
+  font-size: 14px;
+  line-height: 20px;
+  margin-top: 16px;
+  min-height: 20px;
 }
 
 .fillable-form-block .fillable-form-status-error {
@@ -58,16 +79,23 @@
 .fillable-form-block .fillable-form-download-panel {
   border: 1px solid var(--pgn-color-border, #b9b9b9);
   border-radius: var(--pgn-size-border-radius-base, var(--pgn-border-radius-base, 3px));
-  margin-top: var(--pgn-spacing-spacer-5, 2.75rem);
-  padding: var(--pgn-spacing-spacer-4, 2.1rem) var(--pgn-spacing-spacer-5, 5.25rem) var(--pgn-spacing-spacer-4, 2.2rem);
+  margin-top: 44px;
+  padding: 34px 84px 35px;
 }
 
+.fillable-form-block .fillable-form-download-panel h3 {
+  color: var(--pgn-color-gray-700, #444);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 28px;
+  margin: 0 0 10px;
+}
 
 .fillable-form-block .fillable-form-download-panel p {
   color: var(--pgn-color-body-base, #001b3a);
-  font-size: 13px;
-  line-height: 1.4;
-  margin: 0 0 var(--pgn-spacing-spacer-4, 1.45rem);
+  font-size: 14px;
+  line-height: 20px;
+  margin: 0 0 22px;
 }
 
 .fillable-form-block .fillable-form-download-btn {
@@ -77,9 +105,10 @@
   border-radius: var(--pgn-size-btn-border-radius-base, var(--pgn-size-border-radius-base, 4px));
   display: inline-flex;
   font-size: 14px;
-  gap: var(--pgn-spacing-spacer-2, 0.55rem);
-  min-height: 2.25rem;
-  padding: var(--pgn-spacing-btn-padding-y-base, 0.45rem) var(--pgn-spacing-btn-padding-x-base, 1rem);
+  gap: 8px;
+  line-height: 20px;
+  min-height: 36px;
+  padding: 8px 16px;
 }
 
 .fillable-form-block .fillable-form-download-icon {

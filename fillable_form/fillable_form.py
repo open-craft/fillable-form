@@ -118,7 +118,15 @@ class FillableFormXBlock(XBlock):
             or "Student"
         )
 
-    def _render_fragment(self, div_prefix: str, js_bundle: str, js_initializer: str, init_data: BaseModel, div_class: str = "") -> Fragment:
+    def _render_fragment(
+        self,
+        div_prefix: str,
+        js_bundle: str,
+        js_initializer: str,
+        init_data: BaseModel,
+        div_class: str = "",
+        css_path: str | None = None,
+    ) -> Fragment:
         """Build a Fragment with the standard CSS/JS loading pattern."""
         fragment = Fragment()
         class_attr = f' class="{div_class}"' if div_class else ""
@@ -126,11 +134,11 @@ class FillableFormXBlock(XBlock):
             f'<div id="{div_prefix}-{self.scope_ids.usage_id}"{class_attr}></div>'
         )
 
-        css_path = (
+        resolved_css_path = css_path or (
             "static/css/fillable_form_studio.css" if self._is_legacy_studio()
             else "static/css/fillable_form.css"
         )
-        fragment.add_css_url(self.runtime.local_resource_url(self, css_path))
+        fragment.add_css_url(self.runtime.local_resource_url(self, resolved_css_path))
         fragment.add_javascript_url(
             self.runtime.local_resource_url(self, js_bundle)
         )
@@ -166,6 +174,7 @@ class FillableFormXBlock(XBlock):
             "static/js/fillable_form_learner.js",
             "FillableFormLearner",
             init_data,
+            css_path="static/css/fillable_form.css",
         )
 
     @XBlock.json_handler

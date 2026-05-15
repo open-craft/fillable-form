@@ -41,7 +41,7 @@ class TestStudentView:
         """student_view() returns fragment with expected div and init data."""
         # Mock user services
         mock_block._get_django_user = Mock(return_value=(None, None))
-        mock_block._is_legacy_studio = Mock(return_value=False)
+        mock_block._is_legacy_studio = Mock(return_value=True)
         mock_block.runtime.handler_url = Mock(return_value="/handler/url")
         mock_block.runtime.local_resource_url = Mock(return_value="/static/url")
 
@@ -50,6 +50,9 @@ class TestStudentView:
         content = fragment.content
         assert "fillable-form-learner-" in content
         assert '<div id="fillable-form-learner-' in content
+        mock_block.runtime.local_resource_url.assert_any_call(
+            mock_block, "static/css/fillable_form.css"
+        )
 
     def test_student_view_loads_existing_response(self, mock_block):
         """When FormResponse exists, student_view includes current_text."""
