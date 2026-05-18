@@ -81,6 +81,7 @@
   border-radius: var(--pgn-size-border-radius-base, var(--pgn-border-radius-base, 3px));
   margin-top: 44px;
   padding: 34px 84px 35px;
+  background-color: #FBFBFB;
 }
 
 .fillable-form-download-panel h3 {
