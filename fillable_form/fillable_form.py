@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import Http404
 from django.utils.text import slugify
+from django.utils.translation import get_language, gettext as _
 from webob.response import Response
 
 from pydantic import BaseModel
@@ -49,19 +50,19 @@ class FillableFormXBlock(XBlock):
     """
 
     display_name = String(
-        default="Fillable Form Field",
+        default=_("Fillable Form Field"),
         scope=Scope.settings,
-        help="Display name for this component in Studio",
+        help=_("Display name for this component in Studio"),
     )
     instructions = String(
         default="",
         scope=Scope.settings,
-        help="Rich-text instructions shown above the text area",
+        help=_("Rich-text instructions shown above the text area"),
     )
     form_group_id = String(
         default="",
         scope=Scope.settings,
-        help=(
+        help=_(
             "Identifier that links fields together across the course. "
             "Fields with the same Form Group ID are aggregated in the "
             "downloaded PDF."
@@ -70,17 +71,17 @@ class FillableFormXBlock(XBlock):
     field_label = String(
         default="",
         scope=Scope.settings,
-        help="Label used as the section heading for this field in the PDF",
+        help=_("Label used as the section heading for this field in the PDF"),
     )
     show_download_button = Boolean(
         default=False,
         scope=Scope.settings,
-        help="When checked, a download button appears on this field",
+        help=_("When checked, a download button appears on this field"),
     )
     pdf_order = Integer(
         default=0,
         scope=Scope.settings,
-        help="Lower numbers appear first in the downloaded PDF",
+        help=_("Lower numbers appear first in the downloaded PDF"),
     )
 
     def _get_xblock_user(self) -> Any:
@@ -111,11 +112,11 @@ class FillableFormXBlock(XBlock):
     @staticmethod
     def _resolve_user_name(xblock_user: Any) -> str:
         if not xblock_user:
-            return "Student"
+            return _("Student")
         return (
             xblock_user.full_name
             or xblock_user.opt_attrs.get("edx-platform.username")
-            or "Student"
+            or _("Student")
         )
 
     def _render_fragment(
@@ -167,6 +168,7 @@ class FillableFormXBlock(XBlock):
                     self, "download_pdf"
                 ),
             },
+            locale=get_language(),
         )
 
         return self._render_fragment(
@@ -184,7 +186,7 @@ class FillableFormXBlock(XBlock):
 
         django_user, _ = self._get_django_user()
         if not django_user:
-            return {"success": False, "error": "User not authenticated."}
+            return {"success": False, "error": _("User not authenticated.")}
 
         course_key = self.scope_ids.usage_id.course_key
 
@@ -211,7 +213,7 @@ class FillableFormXBlock(XBlock):
         """Generate and return a PDF of all responses in this field's form group."""
         django_user, xblock_user = self._get_django_user()
         if not django_user:
-            raise Http404("User not authenticated.")
+            raise Http404(_("User not authenticated."))
 
         course_key = self.scope_ids.usage_id.course_key
         fields = list(get_registered_form_fields(course_key, self.form_group_id))
@@ -221,6 +223,7 @@ class FillableFormXBlock(XBlock):
 
         form_data = FormGroupData(
             form_group_id=self.form_group_id,
+            no_response_text=_("No response provided."),
             fields=[
                 {
                     "field_label": f.field_label,
@@ -277,6 +280,7 @@ class FillableFormXBlock(XBlock):
                     self, "studio_submit"
                 ),
             },
+            locale=get_language(),
         )
 
         return self._render_fragment(
@@ -292,7 +296,7 @@ class FillableFormXBlock(XBlock):
         """Save Studio editor form data."""
         django_user, _ = self._get_django_user()
         if not django_user or not django_user.is_staff:
-            return {"success": False, "error": "Permission denied."}
+            return {"success": False, "error": _("Permission denied.")}
 
         validated = StudioSaveData.model_validate(data)
 

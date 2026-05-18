@@ -9,6 +9,7 @@ class LearnerInitData(BaseModel):
     current_text: str
     show_download_button: bool
     handler_urls: dict[str, str]
+    locale: str
 
 
 class SaveResponseRequest(BaseModel):
@@ -27,6 +28,7 @@ class StudioInitData(BaseModel):
     show_download_button: bool
     pdf_order: int = 0
     handler_urls: dict[str, str]
+    locale: str
 
 
 class StudioSaveData(BaseModel):

@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
+import { IntlProvider } from 'react-intl';
 import { LearnerView } from '../../learner/LearnerView';
 import type { LearnerConfig } from '../../common/types';
 
@@ -8,6 +9,10 @@ jest.mock('../../common/api', () => ({
 }));
 
 const { postJson } = require('../../common/api');
+
+function renderWithIntl(ui: React.ReactElement, locale = 'en') {
+  return render(<IntlProvider locale={locale} messages={{}}>{ui}</IntlProvider>);
+}
 
 function createConfig(overrides: Partial<LearnerConfig> = {}): LearnerConfig {
   return {
@@ -20,6 +25,7 @@ function createConfig(overrides: Partial<LearnerConfig> = {}): LearnerConfig {
       save_response: '/handler/save_response',
       download_pdf: '/handler/download_pdf',
     },
+    locale: 'en',
     ...overrides,
   };
 }
@@ -35,12 +41,12 @@ afterEach(() => {
 
 describe('LearnerView', () => {
   test('renders field label', () => {
-    render(<LearnerView initData={createConfig()} />);
+    renderWithIntl(<LearnerView initData={createConfig()} />);
     expect(screen.getByText('Test Question')).toBeInTheDocument();
   });
 
   test('renders instructions as HTML', () => {
-    render(<LearnerView initData={createConfig()} />);
+    renderWithIntl(<LearnerView initData={createConfig()} />);
     const instructions = screen.getByText('Please answer carefully.');
     expect(instructions).toBeInTheDocument();
     expect(instructions.tagName).toBe('P');
@@ -48,20 +54,20 @@ describe('LearnerView', () => {
 
   test('renders textarea with current text', () => {
     const config = createConfig({ current_text: 'Existing text' });
-    render(<LearnerView initData={config} />);
+    renderWithIntl(<LearnerView initData={config} />);
     const textarea = screen.getByRole('textbox');
     expect(textarea).toHaveValue('Existing text');
   });
 
   test('renders download button when enabled', () => {
-    render(<LearnerView initData={createConfig({ show_download_button: true })} />);
+    renderWithIntl(<LearnerView initData={createConfig({ show_download_button: true })} />);
     const button = screen.getByText('Download PDF');
     expect(button).toBeInTheDocument();
     expect(button).toHaveAttribute('href', '/handler/download_pdf');
   });
 
   test('does not render download button when disabled', () => {
-    render(<LearnerView initData={createConfig({ show_download_button: false })} />);
+    renderWithIntl(<LearnerView initData={createConfig({ show_download_button: false })} />);
     expect(screen.queryByText('Download PDF')).not.toBeInTheDocument();
   });
 
@@ -71,7 +77,7 @@ describe('LearnerView', () => {
       modified: '2026-05-13T10:00:00',
     });
 
-    render(<LearnerView initData={createConfig()} />);
+    renderWithIntl(<LearnerView initData={createConfig()} />);
     const textarea = screen.getByRole('textbox');
 
     fireEvent.change(textarea, { target: { value: 'New text' } });
@@ -92,7 +98,7 @@ describe('LearnerView', () => {
   });
 
   test('cancels pending auto-save on new keystroke', () => {
-    render(<LearnerView initData={createConfig()} />);
+    renderWithIntl(<LearnerView initData={createConfig()} />);
     const textarea = screen.getByRole('textbox');
 
     fireEvent.change(textarea, { target: { value: 'A' } });
@@ -122,7 +128,7 @@ describe('LearnerView', () => {
       modified: '2026-05-13T10:00:00',
     });
 
-    render(<LearnerView initData={createConfig()} />);
+    renderWithIntl(<LearnerView initData={createConfig()} />);
     const textarea = screen.getByRole('textbox');
 
     fireEvent.change(textarea, { target: { value: 'Blur text' } });
@@ -142,7 +148,7 @@ describe('LearnerView', () => {
     const promise = new Promise((r) => { resolve = r; });
     (postJson as jest.Mock).mockReturnValueOnce(promise);
 
-    render(<LearnerView initData={createConfig()} />);
+    renderWithIntl(<LearnerView initData={createConfig()} />);
     const textarea = screen.getByRole('textbox');
 
     fireEvent.change(textarea, { target: { value: 'New' } });
@@ -162,7 +168,7 @@ describe('LearnerView', () => {
       modified: '2026-05-13T10:00:00',
     });
 
-    render(<LearnerView initData={createConfig()} />);
+    renderWithIntl(<LearnerView initData={createConfig()} />);
     const textarea = screen.getByRole('textbox');
 
     fireEvent.change(textarea, { target: { value: 'New' } });
@@ -178,7 +184,7 @@ describe('LearnerView', () => {
   test('shows error indicator', async () => {
     (postJson as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
 
-    render(<LearnerView initData={createConfig()} />);
+    renderWithIntl(<LearnerView initData={createConfig()} />);
     const textarea = screen.getByRole('textbox');
 
     fireEvent.change(textarea, { target: { value: 'New' } });
@@ -192,7 +198,7 @@ describe('LearnerView', () => {
 
   test('does not save unchanged text', () => {
     const config = createConfig({ current_text: 'Original' });
-    render(<LearnerView initData={config} />);
+    renderWithIntl(<LearnerView initData={config} />);
     const textarea = screen.getByRole('textbox');
 
     // Type and then delete back to original
@@ -210,7 +216,7 @@ describe('LearnerView', () => {
     const promise = new Promise((r) => { resolve = r; });
     (postJson as jest.Mock).mockReturnValueOnce(promise);
 
-    render(<LearnerView initData={createConfig()} />);
+    renderWithIntl(<LearnerView initData={createConfig()} />);
     const textarea = screen.getByRole('textbox');
 
     fireEvent.change(textarea, { target: { value: 'First draft' } });
@@ -228,25 +234,25 @@ describe('LearnerView', () => {
   });
 
   test('empty label does not render heading', () => {
-    render(<LearnerView initData={createConfig({ field_label: '' })} />);
+    renderWithIntl(<LearnerView initData={createConfig({ field_label: '' })} />);
     expect(screen.queryByRole('heading', { name: 'Test Question' })).not.toBeInTheDocument();
   });
 
   test('empty instructions does not render instructions div', () => {
-    const { container } = render(
+    const { container } = renderWithIntl(
       <LearnerView initData={createConfig({ instructions: '' })} />,
     );
     expect(container.querySelector('.fillable-form-instructions')).not.toBeInTheDocument();
   });
 
   test('textarea has aria-label', () => {
-    render(<LearnerView initData={createConfig({ field_label: 'My Label' })} />);
+    renderWithIntl(<LearnerView initData={createConfig({ field_label: 'My Label' })} />);
     const textarea = screen.getByRole('textbox');
     expect(textarea).toHaveAttribute('aria-label', 'My Label');
   });
 
   test('download link opens in new tab', () => {
-    render(<LearnerView initData={createConfig({ show_download_button: true })} />);
+    renderWithIntl(<LearnerView initData={createConfig({ show_download_button: true })} />);
     const link = screen.getByText('Download PDF');
     expect(link).toHaveAttribute('target', '_blank');
   });

@@ -1,3 +1,4 @@
+import { IntlProvider } from 'react-intl';
 import { createRoot, Root } from 'react-dom/client';
 import { LearnerView } from './LearnerView';
 import { LearnerConfig } from '../common/types';
@@ -15,6 +16,10 @@ export function renderBlock(
       ? (element as unknown as HTMLElement[])[0]
       : element;
   root = createRoot(container as HTMLElement);
-  root.render(<LearnerView initData={initData} />);
+  root.render(
+    <IntlProvider locale={initData.locale} messages={{}}>
+      <LearnerView initData={initData} />
+    </IntlProvider>
+  );
   return root;
 }

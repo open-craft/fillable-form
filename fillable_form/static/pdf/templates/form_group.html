@@ -11,7 +11,7 @@
         {% if field.response_text %}
         <div class="response-text">{{ field.response_text | e }}</div>
         {% else %}
-        <div class="response-text"><em>No response provided.</em></div>
+        <div class="response-text"><em>{{ data.no_response_text }}</em></div>
         {% endif %}
     </div>
 </section>

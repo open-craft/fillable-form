@@ -1,3 +1,4 @@
+import { IntlProvider } from 'react-intl';
 import { createRoot, Root } from 'react-dom/client';
 import { StudioView } from './StudioView';
 import { StudioConfig } from '../common/types';
@@ -25,6 +26,10 @@ export function renderBlock(
   }
 
   root = createRoot(container as HTMLElement);
-  root.render(<StudioView initData={initData} runtime={runtime} />);
+  root.render(
+    <IntlProvider locale={initData.locale} messages={{}}>
+      <StudioView initData={initData} runtime={runtime} />
+    </IntlProvider>
+  );
   return root;
 }

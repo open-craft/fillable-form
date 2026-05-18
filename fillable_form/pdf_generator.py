@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from importlib.resources import files
 
+from django.utils.translation import gettext as _
 from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel, Field
 from weasyprint import CSS, HTML
@@ -35,6 +36,7 @@ class FormFieldData(BaseModel):
 class FormGroupData(BaseModel):
     form_group_id: str
     fields: list[FormFieldData]
+    no_response_text: str = _("No response provided.")
 
     def template_file(self) -> str:
         return "form_group.html"

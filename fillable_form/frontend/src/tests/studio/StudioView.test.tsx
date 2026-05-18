@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
+import { IntlProvider } from 'react-intl';
 import { StudioView } from '../../studio/StudioView';
 import type { StudioConfig } from '../../common/types';
 
@@ -51,6 +52,10 @@ jest.mock('react-select/creatable', () => {
 
 const { postJson } = require('../../common/api');
 
+function renderWithIntl(ui: React.ReactElement, locale = 'en') {
+  return render(<IntlProvider locale={locale} messages={{}}>{ui}</IntlProvider>);
+}
+
 function createConfig(overrides: Partial<StudioConfig> = {}): StudioConfig {
   return {
     block_id: 'test-block-id',
@@ -64,6 +69,7 @@ function createConfig(overrides: Partial<StudioConfig> = {}): StudioConfig {
     handler_urls: {
       studio_submit: '/handler/studio_submit',
     },
+    locale: 'en',
     ...overrides,
   };
 }
@@ -80,7 +86,7 @@ beforeEach(() => {
 
 describe('StudioView', () => {
   test('renders all form fields', () => {
-    render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
 
     expect(screen.getByLabelText('Display Name')).toBeInTheDocument();
     expect(screen.getByLabelText('Answer Field Label')).toBeInTheDocument();
@@ -93,7 +99,7 @@ describe('StudioView', () => {
   });
 
   test('pre-fills fields from init data', () => {
-    render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
 
     expect(screen.getByLabelText('Display Name')).toHaveValue('My Form Field');
     expect(screen.getByLabelText('Answer Field Label')).toHaveValue('Section Title');
@@ -104,7 +110,7 @@ describe('StudioView', () => {
   test('calls studio_submit on save', async () => {
     (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
 
-    render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
 
     fireEvent.click(screen.getByText('Save'));
 
@@ -128,7 +134,7 @@ describe('StudioView', () => {
   test('does not submit invalid PDF order from init data', async () => {
     const runtime = createRuntime();
 
-    render(<StudioView initData={createConfig({ pdf_order: -1 })} runtime={runtime} />);
+    renderWithIntl(<StudioView initData={createConfig({ pdf_order: -1 })} runtime={runtime} />);
 
     fireEvent.click(screen.getByText('Save'));
 
@@ -142,7 +148,7 @@ describe('StudioView', () => {
   test('submits changed PDF order', async () => {
     (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
 
-    render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
 
     fireEvent.change(screen.getByLabelText('PDF Order'), { target: { value: '20' } });
     fireEvent.click(screen.getByText('Save'));
@@ -160,7 +166,7 @@ describe('StudioView', () => {
   test('does not submit blank PDF order', async () => {
     const runtime = createRuntime();
 
-    render(<StudioView initData={createConfig()} runtime={runtime} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={runtime} />);
 
     fireEvent.change(screen.getByLabelText('PDF Order'), { target: { value: '' } });
     fireEvent.click(screen.getByText('Save'));
@@ -176,7 +182,7 @@ describe('StudioView', () => {
     (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
     const runtime = createRuntime();
 
-    render(<StudioView initData={createConfig()} runtime={runtime} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={runtime} />);
 
     fireEvent.click(screen.getByText('Save'));
 
@@ -188,7 +194,7 @@ describe('StudioView', () => {
     const promise = new Promise((r) => { resolve = r; });
     (postJson as jest.Mock).mockReturnValueOnce(promise);
 
-    render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
 
     fireEvent.click(screen.getByText('Save'));
     fireEvent.click(screen.getByText('Saving...'));
@@ -204,7 +210,7 @@ describe('StudioView', () => {
     (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
     const runtime = createRuntime();
 
-    render(<StudioView initData={createConfig()} runtime={runtime} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={runtime} />);
 
     fireEvent.click(screen.getByText('Save'));
 
@@ -222,7 +228,7 @@ describe('StudioView', () => {
     });
     const runtime = createRuntime();
 
-    render(<StudioView initData={createConfig()} runtime={runtime} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={runtime} />);
 
     fireEvent.click(screen.getByText('Save'));
 
@@ -240,7 +246,7 @@ describe('StudioView', () => {
     (postJson as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
     const runtime = createRuntime();
 
-    render(<StudioView initData={createConfig()} runtime={runtime} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={runtime} />);
 
     fireEvent.click(screen.getByText('Save'));
 
@@ -257,7 +263,7 @@ describe('StudioView', () => {
   test('notifies runtime on cancel', () => {
     const runtime = createRuntime();
 
-    render(<StudioView initData={createConfig()} runtime={runtime} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={runtime} />);
 
     fireEvent.click(screen.getByText('Cancel'));
 
@@ -270,7 +276,7 @@ describe('StudioView', () => {
       error: 'Save failed.',
     });
 
-    render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
 
     fireEvent.click(screen.getByText('Save'));
 
@@ -282,21 +288,21 @@ describe('StudioView', () => {
   });
 
   test('shows help text for form group ID', () => {
-    render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
     expect(screen.getByText(
       'Select a Group ID to connect fields across units for a PDF version. Create a new Group ID by typing the title and selecting "create" from the bottom of the list.',
     )).toBeInTheDocument();
   });
 
   test('shows help text for field label', () => {
-    render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
     expect(screen.getByText(
       'Provide a name for the field learners use to answer the question',
     )).toBeInTheDocument();
   });
 
   test('toggles download button checkbox', () => {
-    render(<StudioView initData={createConfig({ show_download_button: false })} runtime={createRuntime()} />);
+    renderWithIntl(<StudioView initData={createConfig({ show_download_button: false })} runtime={createRuntime()} />);
 
     const checkbox = screen.getByLabelText('Show PDF download button on this field');
     expect(checkbox).not.toBeChecked();
@@ -311,7 +317,7 @@ describe('StudioView', () => {
   test('displays runtime error message on API error', async () => {
     (postJson as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
 
-    render(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
 
     fireEvent.click(screen.getByText('Save'));
 

@@ -9,6 +9,7 @@ export interface LearnerConfig {
     save_response: string;
     download_pdf: string;
   };
+  locale: string;
 }
 
 /** Init data passed from Python to Studio React app */
@@ -24,6 +25,7 @@ export interface StudioConfig {
   handler_urls: {
     studio_submit: string;
   };
+  locale: string;
 }
 
 /** Standard JSON handler response */

@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
+import { useIntl } from 'react-intl';
 import Creatable from 'react-select/creatable';
 import { Button, Form, StatefulButton } from '@openedx/paragon';
 import { postJson } from '../common/api';
 import { StudioConfig, HandlerResponse } from '../common/types';
+import { studioMessages } from '../common/messages';
 import { TinyMceEditor } from './TinyMceEditor';
 
 const NOTIFY_SAVE = 'save';
@@ -23,6 +25,7 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
           form_group_options, field_label, show_download_button,
           pdf_order, handler_urls } = initData;
 
+  const intl = useIntl();
   const [displayName, setDisplayName] = useState(display_name);
   const [instructionsText, setInstructionsText] = useState(instructions);
   const [formGroupId, setFormGroupId] = useState(form_group_id);
@@ -39,7 +42,10 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
 
   const notifyError = (message: string) => {
     setError(message);
-    runtime.notify?.(NOTIFY_ERROR, { title: 'Save Error', message });
+    runtime.notify?.(NOTIFY_ERROR, {
+      title: intl.formatMessage(studioMessages.errorTitle),
+      message,
+    });
   };
 
   const handleSave = async () => {
@@ -47,14 +53,16 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
       return;
     }
 
+    const pdfOrderError = intl.formatMessage(studioMessages.errorPdfOrder);
+
     if (pdfOrder.trim() === '') {
-      notifyError('PDF Order must be a non-negative whole number.');
+      notifyError(pdfOrderError);
       return;
     }
 
     const parsedPdfOrder = Number(pdfOrder);
     if (!Number.isInteger(parsedPdfOrder) || parsedPdfOrder < 0) {
-      notifyError('PDF Order must be a non-negative whole number.');
+      notifyError(pdfOrderError);
       return;
     }
 
@@ -78,10 +86,10 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
       if (result.success) {
         runtime.notify?.(NOTIFY_SAVE, { state: 'end' });
       } else {
-        notifyError(result.error || 'Save failed.');
+        notifyError(result.error || intl.formatMessage(studioMessages.errorSaveFailed));
       }
     } catch {
-      notifyError('Network error while saving.');
+      notifyError(intl.formatMessage(studioMessages.errorNetwork));
     } finally {
       setSaving(false);
     }
@@ -96,7 +104,7 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
       <div className="fillable-form-studio">
         <Form.Group>
           <Form.Label htmlFor={fieldId(block_id, 'display-name')}>
-            Display Name
+            {intl.formatMessage(studioMessages.labelDisplayName)}
           </Form.Label>
           <Form.Control
             id={fieldId(block_id, 'display-name')}
@@ -110,14 +118,14 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
 
         <Form.Group>
           <Form.Label htmlFor={fieldId(block_id, 'instructions')}>
-            Introduction
+            {intl.formatMessage(studioMessages.labelInstructions)}
           </Form.Label>
           <Form.Control.Feedback>
-            The introduction shows above the answer field. Include any instructions the learner might need
+            {intl.formatMessage(studioMessages.helpInstructions)}
           </Form.Control.Feedback>
           <TinyMceEditor
             id={fieldId(block_id, 'instructions')}
-            ariaLabel="Introduction"
+            ariaLabel={intl.formatMessage(studioMessages.labelInstructions)}
             value={instructionsText}
             onChange={setInstructionsText}
           />
@@ -125,7 +133,7 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
 
         <Form.Group>
           <Form.Label htmlFor={fieldId(block_id, 'field-label')}>
-            Answer Field Label
+            {intl.formatMessage(studioMessages.labelFieldLabel)}
           </Form.Label>
           <Form.Control
             id={fieldId(block_id, 'field-label')}
@@ -136,13 +144,13 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
             }
           />
           <Form.Control.Feedback>
-            Provide a name for the field learners use to answer the question
+            {intl.formatMessage(studioMessages.helpFieldLabel)}
           </Form.Control.Feedback>
         </Form.Group>
 
         <Form.Group>
           <Form.Label htmlFor={fieldId(block_id, 'form-group-id')}>
-            Form Group ID
+            {intl.formatMessage(studioMessages.labelFormGroupId)}
           </Form.Label>
           <Creatable
             inputId={fieldId(block_id, 'form-group-id')}
@@ -151,17 +159,19 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
             options={groupOptions}
             value={formGroupId ? { value: formGroupId, label: formGroupId } : null}
             onChange={(option) => setFormGroupId(option?.value || '')}
-            placeholder="Add group ID"
-            formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
+            placeholder={intl.formatMessage(studioMessages.placeholderFormGroupId)}
+            formatCreateLabel={(inputValue) =>
+              intl.formatMessage(studioMessages.createFormGroupId, { inputValue })
+            }
           />
           <Form.Control.Feedback>
-            Select a Group ID to connect fields across units for a PDF version. Create a new Group ID by typing the title and selecting "create" from the bottom of the list.
+            {intl.formatMessage(studioMessages.helpFormGroupId)}
           </Form.Control.Feedback>
         </Form.Group>
 
         <Form.Group>
           <Form.Label htmlFor={fieldId(block_id, 'pdf-order')}>
-            PDF Order
+            {intl.formatMessage(studioMessages.labelPdfOrder)}
           </Form.Label>
           <Form.Control
             id={fieldId(block_id, 'pdf-order')}
@@ -173,7 +183,7 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
             }
           />
           <Form.Control.Feedback>
-            Lower numbers appear first in the downloaded PDF. Use gaps like 10, 20, 30 to leave room for future fields.
+            {intl.formatMessage(studioMessages.helpPdfOrder)}
           </Form.Control.Feedback>
         </Form.Group>
 
@@ -185,7 +195,7 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
               setShowDownloadButton(e.target.checked)
             }
           >
-            Show PDF download button on this field
+            {intl.formatMessage(studioMessages.labelShowDownload)}
           </Form.Checkbox>
         </Form.Group>
 
@@ -199,14 +209,14 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
             onClick={handleSave}
             state={saving ? 'pending' : 'default'}
             labels={{
-              default: 'Save',
-              pending: 'Saving...',
-              complete: 'Saved',
-              error: 'Error',
+              default: intl.formatMessage(studioMessages.buttonSave),
+              pending: intl.formatMessage(studioMessages.buttonSaving),
+              complete: intl.formatMessage(studioMessages.buttonSaved),
+              error: intl.formatMessage(studioMessages.buttonError),
             }}
           />
           <Button variant="link" onClick={handleCancel}>
-            Cancel
+            {intl.formatMessage(studioMessages.buttonCancel)}
           </Button>
         </div>
       </div>
