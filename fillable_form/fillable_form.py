@@ -242,7 +242,7 @@ class FillableFormXBlock(XBlock):
         try:
             from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
             course_name = CourseOverview.get_from_id(course_key).display_name
-        except Exception:
+        except (ImportError, CourseOverview.DoesNotExist):
             course_name = str(course_key)
 
         metadata = Metadata(
