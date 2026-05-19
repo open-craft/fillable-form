@@ -50,13 +50,13 @@ Then add `fillable_form` to the advanced module list of your course.
 Run migrations:
 
 ```bash
-tutor run lms python manage.py lms migrate fillable_form
+tutor local run lms python manage.py lms migrate fillable_form
 ```
 
 Restart the platform:
 
 ```bash
-tutor restart lms cms
+tutor local restart lms cms
 ```
 
 ### Dependencies

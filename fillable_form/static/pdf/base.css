@@ -30,7 +30,7 @@ body {
 
 header {
     position: fixed;
-    top: -2.55cm;
+    top: calc(-1 * var(--margin-page-top));
     height: var(--header-height);
     width: 100%;
     background: #ffffff;
@@ -93,7 +93,7 @@ header .details {
 
 footer {
     position: fixed;
-    bottom: -1.4cm;
+    bottom: calc(-1 * var(--margin-page-bottom));
     height: var(--footer-height);
     width: 100%;
     background: #f3f3f3;
