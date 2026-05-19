@@ -49,6 +49,8 @@ class FillableFormXBlock(XBlock):
     aggregated and downloaded as a single PDF.
     """
 
+    public_dir = "static"
+
     display_name = String(
         default=_("Fillable Form Field"),
         scope=Scope.settings,
