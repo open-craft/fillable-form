@@ -150,7 +150,7 @@ class FillableFormXBlock(XBlock):
 
     def student_view(self, context: dict[str, Any] | None = None) -> Fragment:
         """Render the student-facing fillable form field."""
-        django_user, _ = self._get_django_user()
+        django_user, _xblock_user = self._get_django_user()
 
         current_text = ""
         if django_user:
@@ -186,7 +186,7 @@ class FillableFormXBlock(XBlock):
         """Save a student's response text. Payload: {"response_text": "..."}."""
         request = SaveResponseRequest.model_validate(data)
 
-        django_user, _ = self._get_django_user()
+        django_user, _xblock_user = self._get_django_user()
         if not django_user:
             return {"success": False, "error": _("User not authenticated.")}
 
@@ -296,9 +296,9 @@ class FillableFormXBlock(XBlock):
     @XBlock.json_handler
     def studio_submit(self, data: dict[str, Any], suffix: str = "") -> dict[str, Any]:
         """Save Studio editor form data."""
-        django_user, _ = self._get_django_user()
-        if not django_user or not django_user.is_staff:
-            return {"success": False, "error": _("Permission denied.")}
+        django_user, _xblock_user = self._get_django_user()
+        if not django_user:
+            return {"success": False, "error": _("User not authenticated.")}
 
         validated = StudioSaveData.model_validate(data)
 
