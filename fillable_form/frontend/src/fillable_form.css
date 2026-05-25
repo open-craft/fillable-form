@@ -1,0 +1,321 @@
+.fillable-form-learner {
+  box-sizing: border-box;
+  color: var(--pgn-color-body-base, #1f2933);
+  font-size: 16px;
+  line-height: 24px;
+  margin: 0 auto 80px;
+  max-width: 1045px;
+  padding: 0;
+  width: 100%;
+}
+
+.fillable-form-instructions {
+  color: var(--pgn-color-body-base, #2f2f2f);
+  font-size: 16px;
+  line-height: 24px;
+  margin: 0 0 42px;
+}
+
+.fillable-form-instructions h1,
+.fillable-form-instructions h2,
+.fillable-form-instructions h3 {
+  color: var(--pgn-color-gray-700, #444);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+  margin: 0 0 12px;
+}
+
+.fillable-form-instructions p {
+  margin: 0 0 8px;
+}
+
+.fillable-form-response {
+  margin-bottom: 42px;
+}
+
+.fillable-form-field-label {
+  color: var(--pgn-color-body-base, #333);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24px;
+  margin: 0 0 10px;
+}
+
+.fillable-form-textarea {
+  background: var(--pgn-color-form-input-bg-base, var(--pgn-color-white, #fff));
+  border: var(--pgn-size-form-input-width-border, 1px) solid var(--pgn-color-form-input-border, var(--pgn-color-border, #d5d5d5));
+  border-radius: 0;
+  color: var(--pgn-color-form-input-base, var(--pgn-color-body-base, #222));
+  display: block;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  min-height: 253px;
+  padding: 21px 22px;
+  resize: vertical;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  width: 100%;
+}
+
+.fillable-form-textarea:focus {
+  border-color: var(--pgn-color-form-input-focus-border, var(--pgn-color-primary-base, #0075b4));
+  box-shadow: 0 0 0 var(--pgn-size-btn-focus-width, 0.15rem) var(--pgn-color-primary-100, rgba(0, 117, 180, 0.16));
+  outline: none;
+}
+
+.fillable-form-meta {
+  color: var(--pgn-color-text-muted, #666);
+  font-size: 14px;
+  line-height: 20px;
+  margin-top: 16px;
+  min-height: 20px;
+}
+
+.fillable-form-status-error {
+  color: var(--pgn-color-danger-base, var(--pgn-color-danger, #dc3545));
+}
+
+.fillable-form-download-panel {
+  border: 1px solid var(--pgn-color-border, #b9b9b9);
+  border-radius: var(--pgn-size-border-radius-base, var(--pgn-border-radius-base, 3px));
+  margin-top: 44px;
+  padding: 34px 84px 35px;
+  background-color: #FBFBFB;
+}
+
+.fillable-form-download-panel h3 {
+  color: var(--pgn-color-gray-700, #444);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 28px;
+  margin: 0 0 10px;
+}
+
+.fillable-form-download-panel p {
+  color: var(--pgn-color-body-base, #001b3a);
+  font-size: 14px;
+  line-height: 20px;
+  margin: 0 0 22px;
+}
+
+.fillable-form-download-btn {
+  align-items: center;
+  background: var(--pgn-color-primary-base, var(--pgn-color-primary, #0075b4));
+  border-color: var(--pgn-color-primary-base, var(--pgn-color-primary, #0075b4));
+  border-radius: var(--pgn-size-btn-border-radius-base, var(--pgn-size-border-radius-base, 4px));
+  display: inline-flex;
+  font-size: 14px;
+  gap: 8px;
+  line-height: 20px;
+  min-height: 36px;
+  padding: 8px 16px;
+}
+
+.fillable-form-download-icon {
+  border-bottom: 2px solid currentColor;
+  display: inline-block;
+  height: 14px;
+  position: relative;
+  width: 14px;
+}
+
+.fillable-form-download-icon::before {
+  border-left: 2px solid currentColor;
+  content: "";
+  height: 9px;
+  left: 6px;
+  position: absolute;
+  top: 0;
+}
+
+.fillable-form-download-icon::after {
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  content: "";
+  height: 6px;
+  left: 4px;
+  position: absolute;
+  top: 4px;
+  transform: rotate(45deg);
+  width: 6px;
+}
+
+.fillable-form-studio {
+  color: var(--pgn-color-body-base, #444);
+  display: flex;
+  flex-direction: column;
+  min-height: 635px;
+  max-width: 1005px;
+  padding: var(--pgn-spacing-spacer-4, 1.5rem) var(--pgn-spacing-spacer-5, 3.5rem) var(--pgn-spacing-spacer-4, 1.5rem);
+}
+
+.fillable-form-studio .pgn__form-group {
+  margin-bottom: var(--pgn-spacing-spacer-3, 1.25rem);
+}
+
+.fillable-form-studio .pgn__form-label {
+  color: var(--pgn-color-form-control-label-base, var(--pgn-color-body-base, #4b4b4b));
+  display: block;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.25;
+  margin-bottom: var(--pgn-spacing-spacer-1, 0.35rem);
+}
+
+.fillable-form-studio .form-control,
+.fillable-form-studio .pgn__form-control {
+  border: var(--pgn-size-form-input-width-border, 1px) solid var(--pgn-color-form-input-border, var(--pgn-color-border, #b8b8b8));
+  border-radius: 0;
+  color: var(--pgn-color-form-input-base, var(--pgn-color-body-base, #333));
+  display: block;
+  font-size: 13px;
+  height: 42px;
+  max-width: 535px;
+  padding: var(--pgn-spacing-form-input-padding-y, 0.55rem) var(--pgn-spacing-form-input-padding-x, 0.75rem);
+  width: 100%;
+}
+
+.fillable-form-studio .form-control:focus,
+.fillable-form-studio .pgn__form-control:focus {
+  border-color: var(--pgn-color-form-input-focus-border, var(--pgn-color-primary-base, #0075b4));
+  box-shadow: 0 0 0 var(--pgn-size-btn-focus-width, 0.15rem) var(--pgn-color-primary-100, rgba(0, 117, 180, 0.15));
+}
+
+.fillable-form-studio .pgn__form-control-description,
+.fillable-form-studio .pgn__form-text,
+.fillable-form-studio .form-control-feedback {
+  color: var(--pgn-color-text-muted, #666);
+  display: block;
+  font-size: var(--pgn-typography-font-size-sm, 12px);
+  line-height: 1.35;
+  margin-bottom: var(--pgn-spacing-spacer-1, 0.45rem);
+  max-width: 610px;
+}
+
+.fillable-form-studio .tox-tinymce {
+  border-color: var(--pgn-color-border, #e2e2e2);
+  border-radius: var(--pgn-size-border-radius-lg, 8px);
+  height: 300px;
+  min-height: 300px;
+}
+
+.fillable-form-studio .tox .tox-editor-header {
+  border-bottom: 1px solid var(--pgn-color-border, #ebebeb);
+  box-shadow: 0 2px 6px var(--pgn-color-shadow, rgba(0, 0, 0, 0.08));
+}
+
+.fillable-form-studio .tox .tox-edit-area::before {
+  border: 0;
+}
+
+.fillable-form-studio .css-b62m3t-container {
+  max-width: 535px;
+}
+
+.fillable-form-studio .fillable-form-select__control {
+  border-color: var(--pgn-color-form-input-border, var(--pgn-color-border, #b8b8b8));
+  border-radius: var(--pgn-size-border-radius-base, 4px);
+  min-height: 42px;
+}
+
+.fillable-form-studio .fillable-form-select__control .fillable-form-select__value-container .fillable-form-select__input-container input.fillable-form-select__input {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  outline: 0 !important;
+  padding: 0 !important;
+}
+
+.fillable-form-studio .fillable-form-select__control .fillable-form-select__input-container {
+  margin: 0 2px;
+  padding: 0;
+}
+
+.fillable-form-studio .fillable-form-select__placeholder {
+  color: var(--pgn-color-form-input-placeholder, var(--pgn-color-text-muted, #666));
+}
+
+.fillable-form-studio .pgn__form-checkbox,
+.fillable-form-studio .form-check {
+  align-items: center;
+  display: flex;
+  gap: var(--pgn-spacing-spacer-2, 0.7rem);
+}
+
+.fillable-form-studio .pgn__form-checkbox-input,
+.fillable-form-studio .form-check-input {
+  border: 2px solid var(--pgn-color-form-control-indicator-border, var(--pgn-color-primary-900, #143d44));
+  border-radius: 0;
+  height: 18px;
+  margin: 0;
+  width: 18px;
+}
+
+.fillable-form-studio .pgn__form-checkbox .pgn__form-label,
+.fillable-form-studio .form-check-label {
+  color: var(--pgn-color-form-control-label-base, var(--pgn-color-body-base, #4b4b4b));
+  font-size: 16px;
+  margin: 0;
+}
+
+.fillable-form-studio-error {
+  color: var(--pgn-color-danger-base, var(--pgn-color-danger, #dc3545));
+  background: var(--pgn-color-danger-100, var(--pgn-color-danger-bg, #f8d7da));
+  border: 1px solid var(--pgn-color-danger-300, var(--pgn-color-danger-border, #f1aeb5));
+  border-radius: var(--pgn-size-border-radius-base, var(--pgn-border-radius-base, 0.25rem));
+  padding: var(--pgn-spacing-spacer-2, var(--pgn-spacing-2, 0.5rem)) var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 0.75rem));
+  margin-bottom: var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 1rem));
+}
+
+.fillable-form-studio-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin: auto 0 0;
+  padding: 1.65rem 0;
+  border-top: 1px solid var(--pgn-color-border, #dee2e6);
+  background: #fff;
+}
+
+.fillable-form-studio-actions .btn {
+  border-radius: var(--pgn-size-btn-border-radius-base, var(--pgn-size-border-radius-base, 4px));
+  font-size: 14px;
+  min-height: 44px;
+  padding: var(--pgn-spacing-btn-padding-y-base, 0.55rem) var(--pgn-spacing-btn-padding-x-base, 1.25rem);
+}
+
+.fillable-form-studio-actions .btn-primary {
+  background: var(--pgn-color-primary-base, var(--pgn-color-primary, #0075b4));
+  border-color: var(--pgn-color-primary-base, var(--pgn-color-primary, #0075b4));
+}
+
+.fillable-form-studio-actions .btn-link {
+  background: transparent;
+  border-color: transparent;
+  color: var(--pgn-color-body-base, #444);
+}
+
+@media (max-width: 720px) {
+  .fillable-form-learner,
+  .fillable-form-studio {
+    padding-left: var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 1rem));
+    padding-right: var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 1rem));
+  }
+
+  .fillable-form-download-panel {
+    padding: var(--pgn-spacing-spacer-4, 1.4rem);
+  }
+
+  .fillable-form-studio .form-control,
+  .fillable-form-studio .css-b62m3t-container {
+    max-width: 100%;
+  }
+}

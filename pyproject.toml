@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fillable-form-xblock"
+version = "0.1.0"
+description = "XBlock for progressive fillable forms with PDF download"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "AGPL-3.0" }
+classifiers = [
+    "Framework :: Django :: 4.2",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "XBlock>=1.5.0,<7.0",
+    "pydantic>=2.12.5,<3",
+    "pydyf>=0.8,<0.11",
+    "weasyprint>=57.2,<62",
+    "Jinja2>=3.0",
+]
+
+[project.entry-points]
+"xblock.v1" = { fillable_form = "fillable_form.fillable_form:FillableFormXBlock" }
+"lms.djangoapp" = { fillable_form = "fillable_form.apps:FillableFormConfig" }
+"cms.djangoapp" = { fillable_form = "fillable_form.apps:FillableFormConfig" }
+
+[tool.setuptools.packages.find]
+include = ["fillable_form", "fillable_form.*"]
+exclude = ["*tests*"]
+
+[tool.setuptools.package-data]
+"fillable_form" = [
+    "static/css/*.css",
+    "static/js/*.js",
+    "static/pdf/templates/*.html",
+    "static/pdf/*.css",
+]

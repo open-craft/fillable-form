@@ -1,0 +1,27 @@
+# Bytecode
+__pycache__/
+*.py[cod]
+
+# Packaging / install
+*.egg-info/
+build/
+dist/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
