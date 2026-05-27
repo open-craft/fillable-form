@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { Button } from '@openedx/paragon';
+import { Download } from '@openedx/paragon/icons';
 import { postJson } from '../common/api';
 import { LearnerConfig, SaveResponseResult } from '../common/types';
 import { learnerMessages } from '../common/messages';
@@ -23,7 +24,7 @@ export function LearnerView({ initData }: LearnerViewProps) {
   const currentTextRef = useRef<string>(current_text);
 
   const lastSavedTime = useMemo(
-    () => (lastSaved ? new Date(lastSaved).toLocaleTimeString() : null),
+    () => (lastSaved ? new Date(lastSaved).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) : null),
     [lastSaved],
   );
 
@@ -149,9 +150,9 @@ export function LearnerView({ initData }: LearnerViewProps) {
             href={downloadUrl}
             target="_blank"
             variant="primary"
+            iconBefore={Download}
             className="fillable-form-download-btn"
           >
-            <span aria-hidden="true" className="fillable-form-download-icon" />
             {intl.formatMessage(learnerMessages.downloadButton)}
           </Button>
         </section>

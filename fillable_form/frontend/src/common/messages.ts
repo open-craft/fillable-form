@@ -66,7 +66,7 @@ export const studioMessages = defineMessages({
   },
   helpInstructions: {
     id: 'fillable.form.studio.help.instructions',
-    defaultMessage: 'The introduction shows above the answer field. Include any instructions the learner might need',
+    defaultMessage: 'The introduction shows above the answer field. Include any instructions the learner might need.',
   },
   labelFieldLabel: {
     id: 'fillable.form.studio.label.field.label',
@@ -74,7 +74,7 @@ export const studioMessages = defineMessages({
   },
   helpFieldLabel: {
     id: 'fillable.form.studio.help.field.label',
-    defaultMessage: 'Provide a name for the field learners use to answer the question',
+    defaultMessage: 'Provide a name for the field learners use to answer the question.',
   },
   labelFormGroupId: {
     id: 'fillable.form.studio.label.form.group.id',
@@ -90,7 +90,7 @@ export const studioMessages = defineMessages({
   },
   helpFormGroupId: {
     id: 'fillable.form.studio.help.form.group.id',
-    defaultMessage: 'Select a Group ID to connect fields across units for a PDF version. Create a new Group ID by typing the title and selecting "create" from the bottom of the list.',
+    defaultMessage: 'Select a Group ID to combine fields from different units into the same downloadable PDF. To create a new Group ID, type a name and select “Create” at the bottom of the list.',
   },
   labelPdfOrder: {
     id: 'fillable.form.studio.label.pdf.order',

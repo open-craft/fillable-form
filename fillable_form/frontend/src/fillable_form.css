@@ -55,7 +55,7 @@
   padding: 21px 22px;
   resize: vertical;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  width: 100%;
+  width: 95%;
 }
 
 .fillable-form-textarea:focus {
@@ -112,34 +112,6 @@
   padding: 8px 16px;
 }
 
-.fillable-form-download-icon {
-  border-bottom: 2px solid currentColor;
-  display: inline-block;
-  height: 14px;
-  position: relative;
-  width: 14px;
-}
-
-.fillable-form-download-icon::before {
-  border-left: 2px solid currentColor;
-  content: "";
-  height: 9px;
-  left: 6px;
-  position: absolute;
-  top: 0;
-}
-
-.fillable-form-download-icon::after {
-  border-bottom: 2px solid currentColor;
-  border-right: 2px solid currentColor;
-  content: "";
-  height: 6px;
-  left: 4px;
-  position: absolute;
-  top: 4px;
-  transform: rotate(45deg);
-  width: 6px;
-}
 
 .fillable-form-studio {
   color: var(--pgn-color-body-base, #444);
@@ -180,6 +152,16 @@
 .fillable-form-studio .pgn__form-control:focus {
   border-color: var(--pgn-color-form-input-focus-border, var(--pgn-color-primary-base, #0075b4));
   box-shadow: 0 0 0 var(--pgn-size-btn-focus-width, 0.15rem) var(--pgn-color-primary-100, rgba(0, 117, 180, 0.15));
+}
+
+.fillable-form-studio input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.fillable-form-studio input[type="number"]::-webkit-inner-spin-button,
+.fillable-form-studio input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .fillable-form-studio .pgn__form-control-description,
