@@ -135,6 +135,9 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
           <Form.Label htmlFor={fieldId(block_id, 'field-label')}>
             {intl.formatMessage(studioMessages.labelFieldLabel)}
           </Form.Label>
+          <Form.Control.Feedback>
+            {intl.formatMessage(studioMessages.helpFieldLabel)}
+          </Form.Control.Feedback>
           <Form.Control
             id={fieldId(block_id, 'field-label')}
             type="text"
@@ -143,15 +146,15 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
               setFieldLabel(e.target.value)
             }
           />
-          <Form.Control.Feedback>
-            {intl.formatMessage(studioMessages.helpFieldLabel)}
-          </Form.Control.Feedback>
         </Form.Group>
 
         <Form.Group>
           <Form.Label htmlFor={fieldId(block_id, 'form-group-id')}>
             {intl.formatMessage(studioMessages.labelFormGroupId)}
           </Form.Label>
+          <Form.Control.Feedback>
+            {intl.formatMessage(studioMessages.helpFormGroupId)}
+          </Form.Control.Feedback>
           <Creatable
             inputId={fieldId(block_id, 'form-group-id')}
             classNamePrefix="fillable-form-select"
@@ -164,15 +167,15 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
               intl.formatMessage(studioMessages.createFormGroupId, { inputValue })
             }
           />
-          <Form.Control.Feedback>
-            {intl.formatMessage(studioMessages.helpFormGroupId)}
-          </Form.Control.Feedback>
         </Form.Group>
 
         <Form.Group>
           <Form.Label htmlFor={fieldId(block_id, 'pdf-order')}>
             {intl.formatMessage(studioMessages.labelPdfOrder)}
           </Form.Label>
+          <Form.Control.Feedback>
+            {intl.formatMessage(studioMessages.helpPdfOrder)}
+          </Form.Control.Feedback>
           <Form.Control
             id={fieldId(block_id, 'pdf-order')}
             type="number"
@@ -182,9 +185,6 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
               setPdfOrder(e.target.value)
             }
           />
-          <Form.Control.Feedback>
-            {intl.formatMessage(studioMessages.helpPdfOrder)}
-          </Form.Control.Feedback>
         </Form.Group>
 
         <Form.Group>

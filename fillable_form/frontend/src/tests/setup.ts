@@ -47,6 +47,7 @@ jest.mock('@openedx/paragon', () => ({
 // Mock Paragon icons (avoid loading actual SVG)
 jest.mock('@openedx/paragon/icons', () => ({
   Close: () => null,
+  Download: () => null,
 }));
 
 // Mock crypto.randomUUID for potential use
