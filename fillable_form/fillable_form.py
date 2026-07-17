@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Any
 
 from django.conf import settings
@@ -38,6 +39,12 @@ from .types import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _strip_html(text: str) -> str:
+    """Strip HTML tags from rich text, leaving plain text for search indexing."""
+    return re.sub(r"<[^>]+>", " ", text)
+
 
 @XBlock.wants("user")
 class FillableFormXBlock(XBlock):
@@ -324,6 +331,23 @@ class FillableFormXBlock(XBlock):
         )
 
         return {"success": True}
+
+    def index_dictionary(self):
+        """
+        Return dictionary prepared with block content and type for indexing.
+        """
+        xblock_body = super().index_dictionary()
+        index_body = {
+            "display_name": self.display_name,
+            "instructions": _strip_html(self.instructions or ""),
+            "field_label": _strip_html(self.field_label or ""),
+        }
+        if "content" in xblock_body:
+            xblock_body["content"].update(index_body)
+        else:
+            xblock_body["content"] = index_body
+        xblock_body["content_type"] = "Fillable Form"
+        return xblock_body
 
     @staticmethod
     def _is_legacy_studio() -> bool:

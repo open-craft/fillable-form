@@ -7,6 +7,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 from opaque_keys.edx.keys import UsageKey
+from xblock.field_data import DictFieldData
 
 
 @pytest.fixture
@@ -20,7 +21,7 @@ def block():
             scope_ids=Mock(usage_id=UsageKey.from_string(
                 "block-v1:TestX+TS101+2026+type@fillable_form+block@testfield"
             )),
-            field_data=Mock(),
+            field_data=DictFieldData({}),
         )
 
 
@@ -57,6 +58,55 @@ class TestXBlockDefaults:
         assert block.fields["form_group_id"].scope == block.fields["display_name"].scope
 
 
+class TestIndexDictionary:
+    """Tests for the index_dictionary Studio search (Meilisearch) payload."""
+
+    def test_indexes_display_name_instructions_and_field_label(self, block):
+        """display_name, instructions, and field_label are indexed under 'content'."""
+        block.display_name = "My Form Field"
+        block.instructions = "Fill this in"
+        block.field_label = "Rating (1-5)"
+
+        result = block.index_dictionary()
+
+        assert result["content_type"] == "Fillable Form"
+        assert result["content"]["display_name"] == "My Form Field"
+        assert result["content"]["instructions"] == "Fill this in"
+        assert result["content"]["field_label"] == "Rating (1-5)"
+
+    def test_strips_html_from_instructions(self, block):
+        """Rich-text HTML markup is stripped from indexed instructions."""
+        block.instructions = "<p>Describe your <strong>goals</strong></p>"
+
+        result = block.index_dictionary()
+
+        instructions = result["content"]["instructions"]
+        assert "<" not in instructions
+        assert ">" not in instructions
+        assert "Describe your" in instructions
+        assert "goals" in instructions
+
+    def test_excludes_non_searchable_fields(self, block):
+        """form_group_id, show_download_button, pdf_order excluded."""
+        block.form_group_id = "group-1"
+
+        result = block.index_dictionary()
+
+        assert "form_group_id" not in result["content"]
+        assert "show_download_button" not in result["content"]
+        assert "pdf_order" not in result["content"]
+
+    def test_handles_none_instructions(self, block):
+        """None instructions and field_label are indexed as empty strings."""
+        block.instructions = None
+        block.field_label = None
+
+        result = block.index_dictionary()
+
+        assert result["content"]["instructions"] == ""
+        assert result["content"]["field_label"] == ""
+
+
 class TestHelpers:
     """Tests for helper methods."""
 
@@ -83,8 +133,6 @@ class TestHelpers:
 
     def test_get_django_user_authenticated(self, block):
         """Returns Django user when authenticated."""
-        from django.contrib.auth import get_user_model
-
         mock_xblock_user = Mock()
         mock_xblock_user.opt_attrs = {"edx-platform.user_id": 1}
 
@@ -92,9 +140,9 @@ class TestHelpers:
         mock_user_service.get_current_user.return_value = mock_xblock_user
         block.runtime.service.return_value = mock_user_service
 
-        with patch("fillable_form.fillable_form.get_user_model") as mock_gum:
+        with patch("fillable_form.fillable_form.User") as mock_user_model:
             mock_user = Mock(id=1)
-            mock_gum.return_value.objects.get.return_value = mock_user
+            mock_user_model.objects.get.return_value = mock_user
 
             result = block._get_django_user()
             assert result[0] == mock_user
