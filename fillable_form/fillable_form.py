@@ -340,6 +340,7 @@ class FillableFormXBlock(XBlock):
         index_body = {
             "display_name": self.display_name,
             "instructions": _strip_html(self.instructions or ""),
+            "field_label": _strip_html(self.field_label or ""),
         }
         if "content" in xblock_body:
             xblock_body["content"].update(index_body)

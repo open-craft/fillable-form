@@ -61,16 +61,18 @@ class TestXBlockDefaults:
 class TestIndexDictionary:
     """Tests for the index_dictionary Studio search (Meilisearch) payload."""
 
-    def test_indexes_display_name_and_instructions(self, block):
-        """display_name and instructions are indexed under 'content'."""
+    def test_indexes_display_name_instructions_and_field_label(self, block):
+        """display_name, instructions, and field_label are indexed under 'content'."""
         block.display_name = "My Form Field"
         block.instructions = "Fill this in"
+        block.field_label = "Rating (1-5)"
 
         result = block.index_dictionary()
 
         assert result["content_type"] == "Fillable Form"
         assert result["content"]["display_name"] == "My Form Field"
         assert result["content"]["instructions"] == "Fill this in"
+        assert result["content"]["field_label"] == "Rating (1-5)"
 
     def test_strips_html_from_instructions(self, block):
         """Rich-text HTML markup is stripped from indexed instructions."""
@@ -85,24 +87,24 @@ class TestIndexDictionary:
         assert "goals" in instructions
 
     def test_excludes_non_searchable_fields(self, block):
-        """field_label, form_group_id, show_download_button, pdf_order excluded."""
-        block.field_label = "PDF Heading"
+        """form_group_id, show_download_button, pdf_order excluded."""
         block.form_group_id = "group-1"
 
         result = block.index_dictionary()
 
-        assert "field_label" not in result["content"]
         assert "form_group_id" not in result["content"]
         assert "show_download_button" not in result["content"]
         assert "pdf_order" not in result["content"]
 
     def test_handles_none_instructions(self, block):
-        """None instructions are indexed as an empty string."""
+        """None instructions and field_label are indexed as empty strings."""
         block.instructions = None
+        block.field_label = None
 
         result = block.index_dictionary()
 
         assert result["content"]["instructions"] == ""
+        assert result["content"]["field_label"] == ""
 
 
 class TestHelpers:
