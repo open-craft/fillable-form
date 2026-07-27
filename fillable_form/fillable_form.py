@@ -9,6 +9,7 @@ from django.utils.text import slugify
 from django.utils.translation import get_language, gettext as _
 from webob.response import Response
 
+from opaque_keys.edx.keys import CourseKey
 from pydantic import BaseModel
 from xblock.core import XBlock
 from xblock.fields import Boolean, Integer, String, Scope
@@ -197,7 +198,9 @@ class FillableFormXBlock(XBlock):
         if not django_user:
             return {"success": False, "error": _("User not authenticated.")}
 
-        course_key = self.scope_ids.usage_id.course_key
+        course_key = self._course_key()
+        if not course_key:
+            return {"success": False, "error": _("Responses can only be saved inside a course.")}
 
         response = save_response(
             user=django_user,
@@ -224,7 +227,9 @@ class FillableFormXBlock(XBlock):
         if not django_user:
             raise Http404(_("User not authenticated."))
 
-        course_key = self.scope_ids.usage_id.course_key
+        course_key = self._course_key()
+        if not course_key:
+            raise Http404(_("PDF download is only available inside a course."))
         fields = list(get_registered_form_fields(course_key, self.form_group_id))
         response_map = get_form_group_responses(
             django_user, course_key, [field.usage_key for field in fields]
@@ -271,16 +276,21 @@ class FillableFormXBlock(XBlock):
             content_disposition=f'attachment; filename="{filename}.pdf"',
         )
 
+    def _course_key(self) -> CourseKey | None:
+        """Return the containing course key, or None outside a course (e.g. content libraries)."""
+        context_key = self.scope_ids.usage_id.context_key
+        return context_key if isinstance(context_key, CourseKey) else None
+
     def studio_view(self, context: dict[str, Any] | None = None) -> Fragment:
         """Render the Studio editing interface."""
-        course_key = self.scope_ids.usage_id.course_key
+        course_key = self._course_key()
 
         init_data = StudioInitData(
             block_id=str(self.scope_ids.usage_id),
             display_name=self.display_name,
             instructions=self.instructions,
             form_group_id=self.form_group_id,
-            form_group_options=get_form_group_options(course_key),
+            form_group_options=get_form_group_options(course_key) if course_key else [],
             field_label=self.field_label,
             show_download_button=self.show_download_button,
             pdf_order=self.pdf_order,
