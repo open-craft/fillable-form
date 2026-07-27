@@ -201,3 +201,14 @@ class TestLibraryContext:
         from opaque_keys.edx.keys import CourseKey
 
         assert isinstance(block._course_key(), CourseKey)  # pylint: disable=protected-access
+
+
+def test_strip_html_hardening():
+    """Script/style contents are dropped and markup edge cases are handled."""
+    from fillable_form.fillable_form import _strip_html
+    assert _strip_html('<script src="x.js">secret()</script>visible') == "visible"
+    assert _strip_html("<style>.a{color:red}</style>styled") == "styled"
+    assert _strip_html('<img alt="a > b">text') == "text"
+    assert _strip_html("<p>foo</p><p>bar</p>") == "foo bar"
+    assert _strip_html("see https://example.com <!-- hidden -->") == "see https://example.com"
+    assert _strip_html(None) == ""

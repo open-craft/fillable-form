@@ -1,5 +1,5 @@
+import html
 import logging
-import re
 from typing import Any
 
 from django.conf import settings
@@ -10,6 +10,7 @@ from django.utils.translation import get_language, gettext as _
 from webob.response import Response
 
 from opaque_keys.edx.keys import CourseKey
+import nh3
 from pydantic import BaseModel
 from xblock.core import XBlock
 from xblock.fields import Boolean, Integer, String, Scope
@@ -43,8 +44,9 @@ logger = logging.getLogger(__name__)
 
 
 def _strip_html(text: str) -> str:
-    """Strip HTML tags from rich text, leaving plain text for search indexing."""
-    return re.sub(r"<[^>]+>", " ", text)
+    """Reduce HTML to searchable plain text; script/style contents are dropped."""
+    text = (text or "").replace("<", " <")
+    return " ".join(html.unescape(nh3.clean(text, tags=set())).split())
 
 
 @XBlock.wants("user")

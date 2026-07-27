@@ -21,6 +21,7 @@ dependencies = [
     "pydyf>=0.8,<0.11",
     "weasyprint>=57.2,<62",
     "Jinja2>=3.0",
+    "nh3>=0.2",
 ]
 
 [project.entry-points]
