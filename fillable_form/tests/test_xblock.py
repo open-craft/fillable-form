@@ -196,6 +196,27 @@ class TestLibraryContext:
             with pytest.raises(Http404):
                 library_block.download_pdf(request=Mock())
 
+    def test_studio_submit_saves_without_registry(self, library_block):
+        """Saving the editor in a library updates fields but skips the course registry."""
+        from fillable_form.fillable_form import FillableFormXBlock
+
+        payload = {
+            "display_name": "Library Form",
+            "instructions": "<p>Fill this in</p>",
+            "form_group_id": "",
+            "field_label": "Answer",
+            "show_download_button": False,
+            "pdf_order": 0,
+        }
+        with patch.object(library_block, "_get_django_user", return_value=(Mock(id=1), None)):
+            with patch("fillable_form.fillable_form.save_form_field") as save_field:
+                result = FillableFormXBlock.studio_submit.__wrapped__(library_block, payload)
+
+        assert result["success"] is True
+        save_field.assert_not_called()
+        assert library_block.display_name == "Library Form"
+        assert library_block.field_label == "Answer"
+
     def test_course_key_returns_course_key_in_courses(self, block):
         """Inside a course the helper returns the real CourseKey."""
         from opaque_keys.edx.keys import CourseKey

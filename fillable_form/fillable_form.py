@@ -328,14 +328,18 @@ class FillableFormXBlock(XBlock):
         self.show_download_button = validated.show_download_button
         self.pdf_order = validated.pdf_order
 
-        save_form_field(
-            course_key=self.scope_ids.usage_id.course_key,
-            usage_key=self.scope_ids.usage_id,
-            form_group_id=self.form_group_id,
-            field_label=self.field_label,
-            instructions=self.instructions,
-            pdf_order=self.pdf_order,
-        )
+        course_key = self._course_key()
+        if course_key:
+            # The form field registry only powers course-level form groups and
+            # PDF assembly, so there is nothing to register outside a course.
+            save_form_field(
+                course_key=course_key,
+                usage_key=self.scope_ids.usage_id,
+                form_group_id=self.form_group_id,
+                field_label=self.field_label,
+                instructions=self.instructions,
+                pdf_order=self.pdf_order,
+            )
 
         logger.info(
             "Studio settings saved: user=%s block=%s",
