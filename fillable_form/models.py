@@ -22,8 +22,8 @@ class FormResponse(TimeStampedModel):
         unique_together = ("user", "usage_key")
         ordering = ["-modified"]
         indexes = [
-            models.Index(fields=["course_key", "form_group_id"]),
-            models.Index(fields=["user", "course_key", "form_group_id"]),
+            models.Index(fields=["course_key", "form_group_id"], name="ff_course_formgroup_idx"),
+            models.Index(fields=["user", "course_key", "form_group_id"], name="ff_user_course_formgroup_idx"),
         ]
 
 
@@ -40,5 +40,5 @@ class FillableFormField(TimeStampedModel):
     class Meta:
         app_label = "fillable_form"
         indexes = [
-            models.Index(fields=["course_key", "form_group_id", "pdf_order"]),
+            models.Index(fields=["course_key", "form_group_id", "pdf_order"], name="ff_course_group_pdforder_idx"),
         ]
