@@ -146,3 +146,90 @@ class TestHelpers:
 
             result = block._get_django_user()
             assert result[0] == mock_user
+
+
+@pytest.fixture
+def library_block():
+    """Create a FillableFormXBlock with a content-library usage key."""
+    with patch("fillable_form.fillable_form.settings"):
+        from fillable_form.fillable_form import FillableFormXBlock
+
+        runtime = Mock()
+        runtime.handler_url.return_value = "/handler/studio_submit"
+        return FillableFormXBlock(
+            runtime=runtime,
+            scope_ids=Mock(usage_id=UsageKey.from_string(
+                "lb:TestX:wgu-xblocks:fillable_form:libtest"
+            )),
+            field_data=DictFieldData({}),
+        )
+
+
+class TestLibraryContext:
+    """The block degrades gracefully outside a course (e.g. content libraries)."""
+
+    def test_studio_view_renders_with_empty_form_groups(self, library_block):
+        """studio_view must not crash in a library; form groups are unavailable."""
+        with patch("fillable_form.fillable_form.get_form_group_options") as get_options:
+            fragment = library_block.studio_view()
+
+        get_options.assert_not_called()
+        assert fragment.content
+
+    def test_save_response_returns_error(self, library_block):
+        """Saving a response outside a course fails cleanly instead of raising."""
+        from fillable_form.fillable_form import FillableFormXBlock
+
+        with patch.object(library_block, "_get_django_user", return_value=(Mock(id=1), None)):
+            result = FillableFormXBlock.save_response.__wrapped__(
+                library_block, {"response_text": "hi"}
+            )
+
+        assert result["success"] is False
+        assert "course" in result["error"]
+
+    def test_download_pdf_raises_http404(self, library_block):
+        """PDF download outside a course raises Http404 instead of crashing."""
+        from django.http import Http404
+
+        with patch.object(library_block, "_get_django_user", return_value=(Mock(id=1), None)):
+            with pytest.raises(Http404):
+                library_block.download_pdf(request=Mock())
+
+    def test_studio_submit_saves_without_registry(self, library_block):
+        """Saving the editor in a library updates fields but skips the course registry."""
+        from fillable_form.fillable_form import FillableFormXBlock
+
+        payload = {
+            "display_name": "Library Form",
+            "instructions": "<p>Fill this in</p>",
+            "form_group_id": "",
+            "field_label": "Answer",
+            "show_download_button": False,
+            "pdf_order": 0,
+        }
+        with patch.object(library_block, "_get_django_user", return_value=(Mock(id=1), None)):
+            with patch("fillable_form.fillable_form.save_form_field") as save_field:
+                result = FillableFormXBlock.studio_submit.__wrapped__(library_block, payload)
+
+        assert result["success"] is True
+        save_field.assert_not_called()
+        assert library_block.display_name == "Library Form"
+        assert library_block.field_label == "Answer"
+
+    def test_course_key_returns_course_key_in_courses(self, block):
+        """Inside a course the helper returns the real CourseKey."""
+        from opaque_keys.edx.keys import CourseKey
+
+        assert isinstance(block._course_key(), CourseKey)  # pylint: disable=protected-access
+
+
+def test_strip_html_hardening():
+    """Script/style contents are dropped and markup edge cases are handled."""
+    from fillable_form.fillable_form import _strip_html
+    assert _strip_html('<script src="x.js">secret()</script>visible') == "visible"
+    assert _strip_html("<style>.a{color:red}</style>styled") == "styled"
+    assert _strip_html('<img alt="a > b">text') == "text"
+    assert _strip_html("<p>foo</p><p>bar</p>") == "foo bar"
+    assert _strip_html("see https://example.com <!-- hidden -->") == "see https://example.com"
+    assert _strip_html(None) == ""
