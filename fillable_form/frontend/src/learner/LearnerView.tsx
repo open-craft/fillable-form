@@ -12,7 +12,9 @@ interface LearnerViewProps {
 
 export function LearnerView({ initData }: LearnerViewProps) {
   const { block_id, field_label, instructions, current_text,
-          show_download_button, handler_urls } = initData;
+          show_download_button, in_course_context, handler_urls } = initData;
+
+  const inCourse = in_course_context !== false;
 
   const intl = useIntl();
   const [text, setText] = useState<string>(current_text);
@@ -29,6 +31,9 @@ export function LearnerView({ initData }: LearnerViewProps) {
   );
 
   const saveStatus = useMemo(() => {
+    if (!inCourse) {
+      return intl.formatMessage(learnerMessages.previewNotice);
+    }
     if (saveState === 'saving') {
       return intl.formatMessage(learnerMessages.saving);
     }
@@ -41,7 +46,7 @@ export function LearnerView({ initData }: LearnerViewProps) {
       return intl.formatMessage(learnerMessages.error);
     }
     return intl.formatMessage(learnerMessages.saved);
-  }, [lastSavedTime, saveState, intl]);
+  }, [inCourse, lastSavedTime, saveState, intl]);
 
   useEffect(() => {
     return () => {
@@ -88,6 +93,9 @@ export function LearnerView({ initData }: LearnerViewProps) {
 
     setText(newText);
     setSaveState('idle');
+    if (!inCourse) {
+      return;
+    }
     debounceRef.current = setTimeout(() => {
       saveResponse(newText);
     }, 1500);
@@ -97,12 +105,12 @@ export function LearnerView({ initData }: LearnerViewProps) {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
-    if (text !== lastSavedTextRef.current) {
+    if (inCourse && text !== lastSavedTextRef.current) {
       saveResponse(text);
     }
   };
 
-  const downloadUrl = show_download_button
+  const downloadUrl = show_download_button && inCourse
     ? handler_urls.download_pdf
     : null;
 
@@ -137,21 +145,24 @@ export function LearnerView({ initData }: LearnerViewProps) {
         </div>
       </div>
 
-      {downloadUrl && (
+      {show_download_button && (
         <section className="fillable-form-download-panel" aria-labelledby={`${block_id}-download-title`}>
           <h3 id={`${block_id}-download-title`}>
             {intl.formatMessage(learnerMessages.downloadHeading)}
           </h3>
           <p>
-            {intl.formatMessage(learnerMessages.downloadDescription)}
+            {intl.formatMessage(
+              downloadUrl ? learnerMessages.downloadDescription : learnerMessages.downloadUnavailable,
+            )}
           </p>
           <Button
             as="a"
-            href={downloadUrl}
+            href={downloadUrl ?? undefined}
             target="_blank"
             variant="primary"
             iconBefore={Download}
             className="fillable-form-download-btn"
+            disabled={!downloadUrl}
           >
             {intl.formatMessage(learnerMessages.downloadButton)}
           </Button>

@@ -172,6 +172,7 @@ class FillableFormXBlock(XBlock):
             instructions=self.instructions,
             current_text=current_text,
             show_download_button=self.show_download_button,
+            in_course_context=self._course_key() is not None,
             handler_urls={
                 "save_response": self.runtime.handler_url(
                     self, "save_response"

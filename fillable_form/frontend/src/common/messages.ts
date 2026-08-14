@@ -37,6 +37,14 @@ export const learnerMessages = defineMessages({
     id: 'fillable.form.learner.download.button',
     defaultMessage: 'Download PDF',
   },
+  previewNotice: {
+    id: 'fillable.form.learner.preview.notice',
+    defaultMessage: 'Preview only — responses are saved when this block is used inside a course.',
+  },
+  downloadUnavailable: {
+    id: 'fillable.form.learner.download.unavailable',
+    defaultMessage: 'PDF download is available when this block is used inside a course.',
+  },
 });
 
 export const studioMessages = defineMessages({

@@ -83,6 +83,33 @@ class TestStudentView:
 
         assert fragment is not None
 
+    def test_student_view_flags_course_context(self, mock_block):
+        """In a course, init data reports in_course_context=True."""
+        mock_block._get_django_user = Mock(return_value=(None, None))
+        mock_block._is_legacy_studio = Mock(return_value=False)
+        mock_block.runtime.handler_url = Mock(return_value="/handler/url")
+        mock_block.runtime.local_resource_url = Mock(return_value="/static/url")
+
+        fragment = mock_block.student_view()
+
+        assert fragment.json_init_args["in_course_context"] is True
+
+    def test_student_view_flags_library_context(self, mock_block):
+        """Outside a course (library preview), init data reports in_course_context=False."""
+        from opaque_keys.edx.locator import LibraryUsageLocatorV2
+
+        mock_block.scope_ids = Mock(usage_id=LibraryUsageLocatorV2.from_string(
+            "lb:TestX:testlib:fillable_form:testfield"
+        ))
+        mock_block._get_django_user = Mock(return_value=(None, None))
+        mock_block._is_legacy_studio = Mock(return_value=False)
+        mock_block.runtime.handler_url = Mock(return_value="/handler/url")
+        mock_block.runtime.local_resource_url = Mock(return_value="/static/url")
+
+        fragment = mock_block.student_view()
+
+        assert fragment.json_init_args["in_course_context"] is False
+
 
 class TestSaveResponseHandler:
     """Tests for save_response handler."""

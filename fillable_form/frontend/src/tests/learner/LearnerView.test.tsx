@@ -256,4 +256,38 @@ describe('LearnerView', () => {
     const link = screen.getByText('Download PDF');
     expect(link).toHaveAttribute('target', '_blank');
   });
+
+  describe('outside a course context (library preview)', () => {
+    test('does not auto-save on typing or blur', () => {
+      renderWithIntl(<LearnerView initData={createConfig({ in_course_context: false })} />);
+      const textarea = screen.getByRole('textbox');
+      fireEvent.change(textarea, { target: { value: 'Typed in preview' } });
+      act(() => { jest.advanceTimersByTime(3000); });
+      fireEvent.blur(textarea);
+      expect(postJson).not.toHaveBeenCalled();
+      expect(textarea).toHaveValue('Typed in preview');
+    });
+
+    test('shows preview notice instead of save status', () => {
+      renderWithIntl(<LearnerView initData={createConfig({ in_course_context: false })} />);
+      expect(screen.getByText(/Preview only/)).toBeInTheDocument();
+    });
+
+    test('disables the PDF download button with an explanation', () => {
+      renderWithIntl(<LearnerView initData={createConfig({ in_course_context: false, show_download_button: true })} />);
+      const control = screen.getByText('Download PDF').closest('a, button')!;
+      expect(control).not.toHaveAttribute('href');
+      expect(control.matches('[disabled], .disabled, [aria-disabled="true"]')).toBe(true);
+      expect(screen.getByText(/PDF download is available/)).toBeInTheDocument();
+    });
+
+    test('missing flag keeps normal course behaviour', () => {
+      postJson.mockResolvedValue({ success: true, modified: '2026-01-01T00:00:00Z' });
+      renderWithIntl(<LearnerView initData={createConfig()} />);
+      const textarea = screen.getByRole('textbox');
+      fireEvent.change(textarea, { target: { value: 'Typed in course' } });
+      act(() => { jest.advanceTimersByTime(1500); });
+      expect(postJson).toHaveBeenCalledWith('/handler/save_response', { response_text: 'Typed in course' });
+    });
+  });
 });

@@ -65,7 +65,7 @@ tutor local restart lms cms
 - Django 4.2
 - XBlock >= 1.5.0, < 7.0
 - pydantic >= 2.12.5, < 3
-- WeasyPrint >= 57.2, < 62
+- WeasyPrint >= 57.2, < 69
 - Jinja2 >= 3.0
 
 Build-time (frontend):

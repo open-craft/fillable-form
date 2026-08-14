@@ -5,6 +5,7 @@ export interface LearnerConfig {
   instructions: string;         // HTML from TinyMCE
   current_text: string;
   show_download_button: boolean;
+  in_course_context?: boolean;
   handler_urls: {
     save_response: string;
     download_pdf: string;
