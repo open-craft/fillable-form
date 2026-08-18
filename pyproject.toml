@@ -18,8 +18,7 @@ classifiers = [
 dependencies = [
     "XBlock>=1.5.0,<7.0",
     "pydantic>=2.12.5,<3",
-    "pydyf>=0.8,<0.11",
-    "weasyprint>=57.2,<62",
+    "weasyprint>=57.2,<69",
     "Jinja2>=3.0",
     "nh3>=0.2",
 ]

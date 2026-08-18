@@ -104,12 +104,27 @@
   background: var(--pgn-color-primary-base, var(--pgn-color-primary, #0075b4));
   border-color: var(--pgn-color-primary-base, var(--pgn-color-primary, #0075b4));
   border-radius: var(--pgn-size-btn-border-radius-base, var(--pgn-size-border-radius-base, 4px));
+  color: var(--pgn-color-white, #fff);
   display: inline-flex;
   font-size: 14px;
   gap: 8px;
   line-height: 20px;
   min-height: 36px;
   padding: 8px 16px;
+  text-decoration: none;
+}
+
+.fillable-form-block .fillable-form-download-btn:hover,
+.fillable-form-block .fillable-form-download-btn:focus,
+.fillable-form-block .fillable-form-download-btn:active {
+  color: var(--pgn-color-white, #fff);
+  text-decoration: none;
+}
+
+.fillable-form-block .fillable-form-download-btn.disabled,
+.fillable-form-block .fillable-form-download-btn:disabled {
+  opacity: 0.65;
+  pointer-events: none;
 }
 
 

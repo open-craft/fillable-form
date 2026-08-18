@@ -8,6 +8,9 @@ class LearnerInitData(BaseModel):
     instructions: str
     current_text: str
     show_download_button: bool
+    # False outside a course (e.g. content-library preview), where responses
+    # cannot be saved and PDFs cannot be assembled.
+    in_course_context: bool = True
     handler_urls: dict[str, str]
     locale: str
 
