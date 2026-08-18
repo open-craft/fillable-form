@@ -163,6 +163,7 @@ export function LearnerView({ initData }: LearnerViewProps) {
             iconBefore={Download}
             className="fillable-form-download-btn"
             disabled={!downloadUrl}
+            aria-disabled={!downloadUrl}
           >
             {intl.formatMessage(learnerMessages.downloadButton)}
           </Button>
