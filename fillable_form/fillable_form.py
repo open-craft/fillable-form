@@ -139,6 +139,7 @@ class FillableFormXBlock(XBlock):
         init_data: BaseModel,
         div_class: str = "",
         css_path: str | None = None,
+        include_css: bool = True,
     ) -> Fragment:
         """Build a Fragment with the standard CSS/JS loading pattern."""
         fragment = Fragment()
@@ -147,11 +148,14 @@ class FillableFormXBlock(XBlock):
             f'<div id="{div_prefix}-{self.scope_ids.usage_id}"{class_attr}></div>'
         )
 
-        resolved_css_path = css_path or (
-            "static/css/fillable_form_studio.css" if self._is_legacy_studio()
-            else "static/css/fillable_form.css"
-        )
-        fragment.add_css_url(self.runtime.local_resource_url(self, resolved_css_path))
+        if include_css:
+            resolved_css_path = css_path or (
+                "static/css/fillable_form_studio.css" if self._is_legacy_studio()
+                else "static/css/fillable_form.css"
+            )
+            fragment.add_css_url(
+                self.runtime.local_resource_url(self, resolved_css_path)
+            )
         fragment.add_javascript_url(
             self.runtime.local_resource_url(self, js_bundle)
         )
@@ -182,14 +186,22 @@ class FillableFormXBlock(XBlock):
                 ),
             },
             locale=get_language(),
+            config={
+                "mfe_config_api": (
+                    f"{getattr(settings, 'LMS_ROOT_URL', '')}"
+                    "/api/mfe_config/v1?mfe=learning"
+                ),
+            },
         )
 
+        # The learner bundle mounts inside a shadow DOM and injects its own
+        # CSS (plus Paragon's), so no external stylesheet is needed.
         return self._render_fragment(
             "fillable-form-learner",
             "static/js/fillable_form_learner.js",
             "FillableFormLearner",
             init_data,
-            css_path="static/css/fillable_form.css",
+            include_css=False,
         )
 
     @XBlock.json_handler

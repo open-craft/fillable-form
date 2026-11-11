@@ -50,8 +50,13 @@ class TestStudentView:
         content = fragment.content
         assert "fillable-form-learner-" in content
         assert '<div id="fillable-form-learner-' in content
+        # CSS is injected into the shadow DOM by the JS bundle, not linked.
+        assert not any(r.mimetype == "text/css" for r in fragment.resources)
         mock_block.runtime.local_resource_url.assert_any_call(
-            mock_block, "static/css/fillable_form.css"
+            mock_block, "static/js/fillable_form_learner.js"
+        )
+        assert fragment.json_init_args["config"]["mfe_config_api"].endswith(
+            "/api/mfe_config/v1?mfe=learning"
         )
 
     def test_student_view_loads_existing_response(self, mock_block):

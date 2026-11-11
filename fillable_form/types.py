@@ -13,6 +13,9 @@ class LearnerInitData(BaseModel):
     in_course_context: bool = True
     handler_urls: dict[str, str]
     locale: str
+    # Consumed by @opencraft/xblock-react-utils' createXBlockRoot to load
+    # the Paragon theme into the block's shadow DOM.
+    config: dict[str, str]
 
 
 class SaveResponseRequest(BaseModel):

@@ -26,6 +26,7 @@ function createConfig(overrides: Partial<LearnerConfig> = {}): LearnerConfig {
       download_pdf: '/handler/download_pdf',
     },
     locale: 'en',
+    config: { mfe_config_api: '/api/mfe_config/v1?mfe=learning' },
     ...overrides,
   };
 }

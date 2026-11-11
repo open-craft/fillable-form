@@ -1,4 +1,6 @@
 /** Init data passed from Python to Learner React app */
+import type { XBlockConfig } from '@opencraft/xblock-react-utils';
+
 export interface LearnerConfig {
   block_id: string;
   field_label: string;
@@ -11,6 +13,7 @@ export interface LearnerConfig {
     download_pdf: string;
   };
   locale: string;
+  config: XBlockConfig;
 }
 
 /** Init data passed from Python to Studio React app */

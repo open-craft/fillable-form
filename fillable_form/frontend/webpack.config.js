@@ -15,10 +15,6 @@ const postcssPlugins = [
   }),
 ];
 
-const learnerPostcssPlugins = [
-  // No prefix for learner — XBlocks render in LMS iframes.
-];
-
 const tsRule = { test: /\.tsx?$/, use: 'ts-loader', exclude: /node_modules|src[\\/]tests/ };
 
 const paragonAssetRules = [
@@ -42,7 +38,8 @@ module.exports = [
     module: {
       rules: [
         tsRule,
-        { test: /\.css$/, use: ['style-loader', { loader: 'css-loader', options: { url: false } }, { loader: 'postcss-loader', options: { postcssOptions: { plugins: learnerPostcssPlugins } } }] },
+        // Imported as a string and injected into the shadow DOM by createXBlockRoot.
+        { test: /\.css$/, use: [{ loader: 'css-loader', options: { url: false, exportType: 'string' } }] },
         ...paragonAssetRules,
       ],
     },
