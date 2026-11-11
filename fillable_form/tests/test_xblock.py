@@ -106,6 +106,17 @@ class TestIndexDictionary:
         assert result["content"]["instructions"] == ""
         assert result["content"]["field_label"] == ""
 
+    def test_student_view_data(self, block):
+        """Test that the index_dictionary alias works."""
+        block.display_name = "My Form Field"
+        block.instructions = "<p>Fill this in</p>"
+        block.field_label = "Rating (1-5)"
+
+        result = block.student_view_data()
+
+        assert result == block.index_dictionary()
+        assert result["content_type"] == "Fillable Form"
+
 
 class TestHelpers:
     """Tests for helper methods."""
