@@ -366,6 +366,9 @@ class FillableFormXBlock(XBlock):
         xblock_body["content_type"] = "Fillable Form"
         return xblock_body
 
+    # Alias needed for client's "Data Bricks" indexer project.
+    student_view_data = index_dictionary
+
     @staticmethod
     def _is_legacy_studio() -> bool:
         """Detect whether we're rendering inside legacy Studio (not MFE)."""
