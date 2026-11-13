@@ -3,6 +3,7 @@ import type { XBlockConfig } from '@opencraft/xblock-react-utils';
 
 export interface LearnerConfig {
   block_id: string;
+  display_name: string;
   field_label: string;
   instructions: string;         // HTML from TinyMCE
   current_text: string;

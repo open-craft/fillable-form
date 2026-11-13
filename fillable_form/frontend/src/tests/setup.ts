@@ -10,7 +10,24 @@ beforeEach(() => {
 });
 
 jest.mock('@openedx/paragon', () => ({
-  Button: ({ children, ...props }: any) => {
+  Icon: () => null,
+  Stack: ({ children, direction, gap, reversed, ...props }: any) => {
+    const React = require('react');
+    return React.createElement('div', props, children);
+  },
+  ActionRow: ({ children }: any) => {
+    const React = require('react');
+    return React.createElement('div', {}, children);
+  },
+  Card: (() => {
+    const React = require('react');
+    const Card = ({ children, orientation, ...props }: any) =>
+      React.createElement('div', props, children);
+    Card.Section = ({ children }: any) => React.createElement('div', {}, children);
+    Card.Footer = ({ children }: any) => React.createElement('div', {}, children);
+    return Card;
+  })(),
+  Button: ({ children, iconBefore, iconAfter, ...props }: any) => {
     const React = require('react');
     return React.createElement('button', { type: 'button', ...props }, children);
   },
@@ -48,6 +65,8 @@ jest.mock('@openedx/paragon', () => ({
 jest.mock('@openedx/paragon/icons', () => ({
   Close: () => null,
   Download: () => null,
+  EditOutline: () => null,
+  InfoOutline: () => null,
 }));
 
 // Mock crypto.randomUUID for potential use

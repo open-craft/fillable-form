@@ -172,6 +172,7 @@ class FillableFormXBlock(XBlock):
 
         init_data = LearnerInitData(
             block_id=str(self.scope_ids.usage_id),
+            display_name=self.display_name,
             field_label=self.field_label,
             instructions=self.instructions,
             current_text=current_text,

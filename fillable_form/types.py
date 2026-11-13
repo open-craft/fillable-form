@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 class LearnerInitData(BaseModel):
     """Init data passed to the learner React app."""
     block_id: str
+    display_name: str
     field_label: str
     instructions: str
     current_text: str

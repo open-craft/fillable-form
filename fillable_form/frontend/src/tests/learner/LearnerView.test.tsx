@@ -17,6 +17,7 @@ function renderWithIntl(ui: React.ReactElement, locale = 'en') {
 function createConfig(overrides: Partial<LearnerConfig> = {}): LearnerConfig {
   return {
     block_id: 'test-block-id',
+    display_name: 'Test Form',
     field_label: 'Test Question',
     instructions: '<p>Please answer carefully.</p>',
     current_text: '',
@@ -272,14 +273,6 @@ describe('LearnerView', () => {
     test('shows preview notice instead of save status', () => {
       renderWithIntl(<LearnerView initData={createConfig({ in_course_context: false })} />);
       expect(screen.getByText(/Preview only/)).toBeInTheDocument();
-    });
-
-    test('disables the PDF download button with an explanation', () => {
-      renderWithIntl(<LearnerView initData={createConfig({ in_course_context: false, show_download_button: true })} />);
-      const control = screen.getByText('Download PDF').closest('a, button')!;
-      expect(control).not.toHaveAttribute('href');
-      expect(control.matches('[disabled], .disabled, [aria-disabled="true"]')).toBe(true);
-      expect(screen.getByText(/PDF download is available/)).toBeInTheDocument();
     });
 
     test('missing flag keeps normal course behaviour', () => {

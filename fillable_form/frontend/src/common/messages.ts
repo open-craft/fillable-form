@@ -25,14 +25,6 @@ export const learnerMessages = defineMessages({
     id: 'fillable.form.learner.fallback.label',
     defaultMessage: 'Form field',
   },
-  downloadHeading: {
-    id: 'fillable.form.learner.download.heading',
-    defaultMessage: 'Download Exercise',
-  },
-  downloadDescription: {
-    id: 'fillable.form.learner.download.description',
-    defaultMessage: 'Your response is part of a collection. Click Download to save them all as a PDF.',
-  },
   downloadButton: {
     id: 'fillable.form.learner.download.button',
     defaultMessage: 'Download PDF',
@@ -40,10 +32,6 @@ export const learnerMessages = defineMessages({
   previewNotice: {
     id: 'fillable.form.learner.preview.notice',
     defaultMessage: 'Preview only — responses are saved when this block is used inside a course.',
-  },
-  downloadUnavailable: {
-    id: 'fillable.form.learner.download.unavailable',
-    defaultMessage: 'PDF download is available when this block is used inside a course.',
   },
 });
 

@@ -7,13 +7,31 @@
   max-width: 1045px;
   padding: 0;
   width: 100%;
+
+  .fillable-form-header {
+    .fillable-form-header-icon {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .fillable-form-header-divider {
+      align-self: stretch;
+      flex-shrink: 0;
+      width: 2px;
+      background-color: black;
+    }
+
+    .fillable-form-header-title {
+      line-height: 1.5rem;
+    }
+  }
 }
 
 .fillable-form-instructions {
   color: var(--pgn-color-body-base, #2f2f2f);
   font-size: 16px;
   line-height: 24px;
-  margin: 0 0 42px;
+  margin: 0 0;
 }
 
 .fillable-form-instructions h1,
@@ -45,7 +63,6 @@
 .fillable-form-textarea {
   background: var(--pgn-color-form-input-bg-base, var(--pgn-color-white, #fff));
   border: var(--pgn-size-form-input-width-border, 1px) solid var(--pgn-color-form-input-border, var(--pgn-color-border, #d5d5d5));
-  border-radius: 0;
   color: var(--pgn-color-form-input-base, var(--pgn-color-body-base, #222));
   display: block;
   font-family: inherit;
@@ -55,7 +72,7 @@
   padding: 21px 22px;
   resize: vertical;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  width: 95%;
+  width: 100%;
 }
 
 .fillable-form-textarea:focus {
