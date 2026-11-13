@@ -8,6 +8,7 @@ export interface LearnerConfig {
   instructions: string;         // HTML from TinyMCE
   current_text: string;
   show_download_button: boolean;
+  download_button_info: string;
   in_course_context?: boolean;
   handler_urls: {
     save_response: string;
@@ -26,6 +27,7 @@ export interface StudioConfig {
   form_group_options: string[]; // Existing form group IDs in the course
   field_label: string;
   show_download_button: boolean;
+  download_button_info: string;
   pdf_order: number;
   handler_urls: {
     studio_submit: string;

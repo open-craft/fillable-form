@@ -66,6 +66,7 @@ function createConfig(overrides: Partial<StudioConfig> = {}): StudioConfig {
     form_group_options: ['group-alpha', 'group-beta'],
     field_label: 'Section Title',
     show_download_button: true,
+    download_button_info: '',
     pdf_order: 10,
     handler_urls: {
       studio_submit: '/handler/studio_submit',
@@ -127,6 +128,7 @@ describe('StudioView', () => {
         form_group_id: 'group-alpha',
         field_label: 'Section Title',
         show_download_button: true,
+        download_button_info: '',
         pdf_order: 10,
       },
     );
@@ -309,6 +311,35 @@ describe('StudioView', () => {
 
     fireEvent.click(checkbox);
     expect(checkbox).not.toBeChecked();
+  });
+
+  test('shows download card text field only when download button is enabled', () => {
+    renderWithIntl(<StudioView initData={createConfig({ show_download_button: false })} runtime={createRuntime()} />);
+
+    expect(screen.queryByLabelText('Download Card Text')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('Show PDF download button on this field'));
+    expect(screen.getByLabelText('Download Card Text')).toBeInTheDocument();
+  });
+
+  test('submits edited download card text', async () => {
+    (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
+
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+
+    fireEvent.change(screen.getByLabelText('Download Card Text'), {
+      target: { value: 'Download all your answers.' },
+    });
+    fireEvent.click(screen.getByText('Save'));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(postJson).toHaveBeenCalledWith(
+      '/handler/studio_submit',
+      expect.objectContaining({ download_button_info: 'Download all your answers.' }),
+    );
   });
 
   test('displays runtime error message on API error', async () => {

@@ -23,7 +23,7 @@ const fieldId = (blockId: string, prefix: string) => `${prefix}-${blockId}`;
 export function StudioView({ initData, runtime }: StudioViewProps) {
   const { block_id, display_name, instructions, form_group_id,
           form_group_options, field_label, show_download_button,
-          pdf_order, handler_urls } = initData;
+          download_button_info, pdf_order, handler_urls } = initData;
 
   const intl = useIntl();
   const [displayName, setDisplayName] = useState(display_name);
@@ -31,6 +31,7 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
   const [formGroupId, setFormGroupId] = useState(form_group_id);
   const [fieldLabel, setFieldLabel] = useState(field_label);
   const [showDownloadButton, setShowDownloadButton] = useState(show_download_button);
+  const [downloadButtonInfo, setDownloadButtonInfo] = useState(download_button_info);
   const [pdfOrder, setPdfOrder] = useState<string>(String(pdf_order));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,6 +80,7 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
           form_group_id: formGroupId,
           field_label: fieldLabel,
           show_download_button: showDownloadButton,
+          download_button_info: downloadButtonInfo,
           pdf_order: parsedPdfOrder,
         },
       );
@@ -198,6 +200,25 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
             {intl.formatMessage(studioMessages.labelShowDownload)}
           </Form.Checkbox>
         </Form.Group>
+
+        {showDownloadButton && (
+          <Form.Group>
+            <Form.Label htmlFor={fieldId(block_id, 'download-button-info')}>
+              {intl.formatMessage(studioMessages.labelDownloadButtonInfo)}
+            </Form.Label>
+            <Form.Control.Feedback>
+              {intl.formatMessage(studioMessages.helpDownloadButtonInfo)}
+            </Form.Control.Feedback>
+            <Form.Control
+              id={fieldId(block_id, 'download-button-info')}
+              type="text"
+              value={downloadButtonInfo}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setDownloadButtonInfo(e.target.value)
+              }
+            />
+          </Form.Group>
+        )}
 
         {error && (
           <div className="fillable-form-studio-error">{error}</div>

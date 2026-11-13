@@ -90,6 +90,14 @@ class FillableFormXBlock(XBlock):
         scope=Scope.settings,
         help=_("When checked, a download button appears on this field"),
     )
+    download_button_info = String(
+        default="",
+        scope=Scope.settings,
+        help=_(
+            "Text shown in the download card next to the download button. "
+            "When empty, the frontend shows its default text."
+        ),
+    )
     pdf_order = Integer(
         default=0,
         scope=Scope.settings,
@@ -177,6 +185,7 @@ class FillableFormXBlock(XBlock):
             instructions=self.instructions,
             current_text=current_text,
             show_download_button=self.show_download_button,
+            download_button_info=self.download_button_info,
             in_course_context=self._course_key() is not None,
             handler_urls={
                 "save_response": self.runtime.handler_url(
@@ -309,6 +318,7 @@ class FillableFormXBlock(XBlock):
             form_group_options=get_form_group_options(course_key) if course_key else [],
             field_label=self.field_label,
             show_download_button=self.show_download_button,
+            download_button_info=self.download_button_info,
             pdf_order=self.pdf_order,
             handler_urls={
                 "studio_submit": self.runtime.handler_url(
@@ -340,6 +350,8 @@ class FillableFormXBlock(XBlock):
         self.form_group_id = validated.form_group_id
         self.field_label = validated.field_label
         self.show_download_button = validated.show_download_button
+        if validated.download_button_info is not None:
+            self.download_button_info = validated.download_button_info
         self.pdf_order = validated.pdf_order
 
         course_key = self._course_key()

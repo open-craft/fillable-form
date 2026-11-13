@@ -22,6 +22,7 @@ function createConfig(overrides: Partial<LearnerConfig> = {}): LearnerConfig {
     instructions: '<p>Please answer carefully.</p>',
     current_text: '',
     show_download_button: true,
+    download_button_info: '',
     handler_urls: {
       save_response: '/handler/save_response',
       download_pdf: '/handler/download_pdf',

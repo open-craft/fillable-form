@@ -29,6 +29,7 @@ def mock_block():
         block.form_group_id = "group1"
         block.field_label = "Question 1"
         block.show_download_button = True
+        block.download_button_info = "Download your answers as a PDF."
         block.pdf_order = 0
 
         return block
@@ -57,6 +58,9 @@ class TestStudentView:
         )
         assert fragment.json_init_args["config"]["mfe_config_api"].endswith(
             "/api/mfe_config/v1?mfe=learning"
+        )
+        assert fragment.json_init_args["download_button_info"] == (
+            mock_block.download_button_info
         )
 
     def test_student_view_loads_existing_response(self, mock_block):
@@ -257,6 +261,7 @@ class TestStudioView:
                 "form_group_id": "group2",
                 "field_label": "Q2",
                 "show_download_button": True,
+                "download_button_info": "Download all your answers.",
                 "pdf_order": 20,
             })
 
@@ -266,8 +271,28 @@ class TestStudioView:
         assert mock_block.form_group_id == "group2"
         assert mock_block.field_label == "Q2"
         assert mock_block.show_download_button is True
+        assert mock_block.download_button_info == "Download all your answers."
         assert mock_block.pdf_order == 20
         mock_upsert.assert_called_once()
+
+    def test_studio_submit_keeps_download_button_info_when_missing(self, mock_block):
+        """A payload without download_button_info keeps the stored value."""
+        mock_user = Mock(id=1, is_staff=True)
+        mock_block._get_django_user = Mock(return_value=(mock_user, None))
+        mock_block.download_button_info = "Existing text"
+
+        with patch("fillable_form.fillable_form.save_form_field"):
+            result = mock_block.studio_submit({
+                "display_name": "X",
+                "instructions": "X",
+                "form_group_id": "X",
+                "field_label": "X",
+                "show_download_button": True,
+                "pdf_order": 0,
+            })
+
+        assert result["success"] is True
+        assert mock_block.download_button_info == "Existing text"
 
     def test_studio_submit_permission_denied(self, mock_block):
         """Returns permission denied when user is not staff."""

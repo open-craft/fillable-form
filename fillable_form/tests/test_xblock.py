@@ -48,6 +48,10 @@ class TestXBlockDefaults:
         """show_download_button defaults to False."""
         assert block.show_download_button is False
 
+    def test_download_button_info_default(self, block):
+        """download_button_info defaults to empty string (the frontend provides the text)."""
+        assert block.download_button_info == ""
+
     def test_pdf_order_default(self, block):
         """pdf_order defaults to 0."""
         assert block.pdf_order == 0

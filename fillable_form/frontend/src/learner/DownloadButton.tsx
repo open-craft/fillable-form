@@ -3,28 +3,40 @@ import { Download, InfoOutline } from "@openedx/paragon/icons";
 import { FormattedMessage } from "react-intl";
 import { learnerMessages } from "../common/messages";
 
-export const DownloadButton = ({ downloadUrl }: { downloadUrl: string }) => {
-  return (
-    <Card orientation='horizontal' className='p-2'>
-      <Card.Section >
-        <Stack direction="horizontal" gap={3}>
-          <Icon src={InfoOutline} />
-          <span>Save your journal entries from this course as a single PDF and see how your perspective changed.</span>
-        </Stack>
-      </Card.Section>
-      <Card.Footer>
-        <ActionRow>
-          <Button
-            as="a"
-            href={downloadUrl}
-            target="_blank"
-            variant="tertiary"
-            iconAfter={Download}
-          >
-            <FormattedMessage {...learnerMessages.downloadButton} />
-          </Button>
-        </ActionRow>
-      </Card.Footer> 
-    </Card>
-  ); 
+export interface DownloadButtonProps {
+  downloadUrl: string;
+  downloadButtonInfo: string;
 };
+
+export const DownloadButton = ({
+  downloadUrl,
+  downloadButtonInfo
+}: DownloadButtonProps) => (
+  <Card orientation='horizontal' className='p-2'>
+    <Card.Section >
+      <Stack direction="horizontal" gap={3}>
+        <Icon src={InfoOutline} />
+        <span>
+          {downloadButtonInfo ? (
+            downloadButtonInfo
+          ) : (
+            <FormattedMessage {...learnerMessages.downloadButtonInfoDefault} />
+          )}  
+        </span>
+      </Stack>
+    </Card.Section>
+    <Card.Footer>
+      <ActionRow>
+        <Button
+          as="a"
+          href={downloadUrl}
+          target="_blank"
+          variant="tertiary"
+          iconAfter={Download}
+        >
+          <FormattedMessage {...learnerMessages.downloadButton} />
+        </Button>
+      </ActionRow>
+    </Card.Footer> 
+  </Card>
+);

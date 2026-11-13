@@ -12,8 +12,17 @@ interface LearnerViewProps {
 }
 
 export function LearnerView({ initData }: LearnerViewProps) {
-  const { block_id, field_label, instructions, current_text,
-          show_download_button, in_course_context, handler_urls, display_name } = initData;
+  const {
+    block_id,
+    field_label,
+    instructions,
+    current_text,
+    show_download_button,
+    in_course_context,
+    handler_urls,
+    display_name,
+    download_button_info,
+  } = initData;
 
   const inCourse = in_course_context !== false;
 
@@ -154,7 +163,10 @@ export function LearnerView({ initData }: LearnerViewProps) {
       </div>
 
       {show_download_button && downloadUrl && (
-        <DownloadButton downloadUrl={downloadUrl} />
+        <DownloadButton
+          downloadUrl={downloadUrl}
+          downloadButtonInfo={download_button_info}
+        />
       )}
     </div>
   );
