@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { StudioView } from '../../studio/StudioView';
+import { studioMessages } from '../../common/messages';
 import type { StudioConfig } from '../../common/types';
 
 // Mock the API module
@@ -287,18 +288,15 @@ describe('StudioView', () => {
     expect(screen.getByText('Save failed.')).toBeInTheDocument();
   });
 
+  // Help texts are read from the message catalogue so copy edits don't break these tests.
   test('shows help text for form group ID', () => {
     renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
-    expect(screen.getByText(
-      'Select a Group ID to connect fields across units for a PDF version. Create a new Group ID by typing the title and selecting "create" from the bottom of the list.',
-    )).toBeInTheDocument();
+    expect(screen.getByText(studioMessages.helpFormGroupId.defaultMessage as string)).toBeInTheDocument();
   });
 
   test('shows help text for field label', () => {
     renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
-    expect(screen.getByText(
-      'Provide a name for the field learners use to answer the question',
-    )).toBeInTheDocument();
+    expect(screen.getByText(studioMessages.helpFieldLabel.defaultMessage as string)).toBeInTheDocument();
   });
 
   test('toggles download button checkbox', () => {
