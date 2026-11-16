@@ -254,11 +254,20 @@ class FillableFormXBlock(XBlock):
         user_email = xblock_user.emails[0] if xblock_user and xblock_user.emails else ""
         user_name = self._resolve_user_name(xblock_user)
 
+        # Fall back to the course key if CourseOverview is unavailable (outside
+        # edx-platform) or has no entry for this course. The import is kept
+        # separate from the lookup: if it fails, CourseOverview is unbound and
+        # can't appear in an except clause.
+        course_name = str(course_key)
         try:
             from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-            course_name = CourseOverview.get_from_id(course_key).display_name
-        except (ImportError, CourseOverview.DoesNotExist):
-            course_name = str(course_key)
+        except ImportError:
+            pass
+        else:
+            try:
+                course_name = CourseOverview.get_from_id(course_key).display_name
+            except CourseOverview.DoesNotExist:
+                pass
 
         metadata = Metadata(
             info=Info(title=self.display_name, course_name=course_name),
