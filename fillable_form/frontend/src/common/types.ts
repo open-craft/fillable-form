@@ -33,6 +33,7 @@ export interface StudioConfig {
     studio_submit: string;
   };
   locale: string;
+  config: XBlockConfig;
 }
 
 /** Standard JSON handler response */

@@ -8,6 +8,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
     "@opencraft/xblock-react-utils": "^0.1.1",
     "@openedx/paragon": "^23.19.1",
     "@tinymce/tinymce-react": "^5.1.1",

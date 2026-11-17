@@ -72,6 +72,7 @@ function createConfig(overrides: Partial<StudioConfig> = {}): StudioConfig {
       studio_submit: '/handler/studio_submit',
     },
     locale: 'en',
+    config: { mfe_config_api: '/api/mfe_config/v1?mfe=learning' },
     ...overrides,
   };
 }

@@ -14,7 +14,7 @@ const NOTIFY_CANCEL = 'cancel';
 interface StudioViewProps {
   initData: StudioConfig;
   runtime: {
-    notify?: (action: string, data?: Record<string, unknown>) => void;
+    notify?: (action: string, data: object) => void;
   };
 }
 

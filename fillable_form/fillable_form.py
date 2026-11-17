@@ -139,6 +139,19 @@ class FillableFormXBlock(XBlock):
             or _("Student")
         )
 
+    @staticmethod
+    def _xblock_react_config() -> dict[str, str]:
+        """
+        Config consumed by @opencraft/xblock-react-utils' createXBlockRoot,
+        which uses it to load the Paragon theme into the block's shadow DOM.
+        """
+        return {
+            "mfe_config_api": (
+                f"{getattr(settings, 'LMS_ROOT_URL', '')}"
+                "/api/mfe_config/v1?mfe=learning"
+            ),
+        }
+
     def _render_fragment(
         self,
         div_prefix: str,
@@ -196,12 +209,7 @@ class FillableFormXBlock(XBlock):
                 ),
             },
             locale=get_language(),
-            config={
-                "mfe_config_api": (
-                    f"{getattr(settings, 'LMS_ROOT_URL', '')}"
-                    "/api/mfe_config/v1?mfe=learning"
-                ),
-            },
+            config=self._xblock_react_config(),
         )
 
         # The learner bundle mounts inside a shadow DOM and injects its own
@@ -326,14 +334,18 @@ class FillableFormXBlock(XBlock):
                 ),
             },
             locale=get_language(),
+            config=self._xblock_react_config(),
         )
 
+        # Like the learner view, the Studio bundle mounts inside a shadow DOM
+        # and injects its own CSS (plus Paragon's).
         return self._render_fragment(
             "fillable-form-studio",
             "static/js/fillable_form_studio.js",
             "FillableFormStudio",
             init_data,
             div_class="editor-with-buttons",
+            include_css=False,
         )
 
     @XBlock.json_handler

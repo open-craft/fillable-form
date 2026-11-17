@@ -59,7 +59,8 @@ module.exports = [
     module: {
       rules: [
         tsRule,
-        { test: /\.css$/, use: ['style-loader', { loader: 'css-loader', options: { url: false } }, { loader: 'postcss-loader', options: { postcssOptions: { plugins: postcssPlugins } } }] },
+        // Imported as a string and injected into the shadow DOM by createXBlockRoot.
+        { test: /\.css$/, use: [{ loader: 'css-loader', options: { url: false, exportType: 'string' } }] },
         ...paragonAssetRules,
       ],
     },

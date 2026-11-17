@@ -236,6 +236,20 @@ class TestDownloadPdfHandler:
 class TestStudioView:
     """Tests for studio_view and studio_submit."""
 
+    def test_studio_view_mounts_in_shadow_dom(self, mock_block):
+        """studio_view() links no CSS and passes the createXBlockRoot config."""
+        mock_block.runtime.handler_url = Mock(return_value="/handler/url")
+        mock_block.runtime.local_resource_url = Mock(return_value="/static/url")
+
+        with patch("fillable_form.fillable_form.get_form_group_options", return_value=[]):
+            fragment = mock_block.studio_view()
+
+        # CSS is injected into the shadow DOM by the JS bundle, not linked.
+        assert not any(r.mimetype == "text/css" for r in fragment.resources)
+        assert fragment.json_init_args["config"]["mfe_config_api"].endswith(
+            "/api/mfe_config/v1?mfe=learning"
+        )
+
     def test_studio_view_includes_form_group_options(self, mock_block):
         """studio_view() passes form_group_options in init data."""
         mock_user = Mock(id=1, is_staff=True)

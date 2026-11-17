@@ -1,35 +1,34 @@
 import { IntlProvider } from 'react-intl';
-import { createRoot, Root } from 'react-dom/client';
+import {
+  createXBlockRoot,
+  getRoot,
+  type XBlockRuntime,
+} from '@opencraft/xblock-react-utils';
 import { StudioView } from './StudioView';
+import { ShadowEmotionProvider } from './ShadowEmotionProvider';
 import { StudioConfig } from '../common/types';
-
-interface StudioRuntime {
-  notify?: (action: string, data?: Record<string, unknown>) => void;
-}
-
-let root: Root | null = null;
+import styles from '../fillable_form.css';
 
 export function renderBlock(
-  runtime: StudioRuntime,
+  runtime: XBlockRuntime,
   element: HTMLElement,
   initData: StudioConfig,
-): Root {
+): Promise<void> {
   // element may be a jQuery object from Studio's handleXBlockFragment
-  const container =
-    element && 'jquery' in element
-      ? (element as unknown as HTMLElement[])[0]
-      : element;
+  const container = getRoot(element);
 
-  const modalBody = (container as HTMLElement).parentElement?.parentElement;
+  const modalBody = container.parentElement?.parentElement;
   if (modalBody instanceof HTMLElement) {
     modalBody.style.minHeight = '635px';
   }
 
-  root = createRoot(container as HTMLElement);
-  root.render(
+  // createXBlockRoot mounts the app inside a shadow DOM and injects our CSS
+  // plus Paragon's core and theme stylesheets, as in the learner view.
+  return createXBlockRoot({ runtime, element: container, config: initData.config, styles })(
     <IntlProvider locale={initData.locale} messages={{}}>
-      <StudioView initData={initData} runtime={runtime} />
-    </IntlProvider>
+      <ShadowEmotionProvider>
+        <StudioView initData={initData} runtime={runtime} />
+      </ShadowEmotionProvider>
+    </IntlProvider>,
   );
-  return root;
 }

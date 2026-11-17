@@ -38,6 +38,8 @@ class StudioInitData(BaseModel):
     pdf_order: int = 0
     handler_urls: dict[str, str]
     locale: str
+    # Consumed by createXBlockRoot, as in LearnerInitData.
+    config: dict[str, str]
 
 
 class StudioSaveData(BaseModel):
