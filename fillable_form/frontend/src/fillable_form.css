@@ -1,3 +1,21 @@
+.material-icons-outlined {
+  font-family: 'Material Icons Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
+
 .fillable-form-learner {
   box-sizing: border-box;
   color: var(--pgn-color-body-base, #1f2933);
@@ -10,8 +28,7 @@
 
   .fillable-form-header {
     .fillable-form-header-icon {
-      width: 3rem;
-      height: 3rem;
+      font-size: 3rem;
     }
 
     .fillable-form-header-divider {
@@ -275,6 +292,53 @@
   color: var(--pgn-color-form-control-label-base, var(--pgn-color-body-base, #4b4b4b));
   font-size: 16px;
   margin: 0;
+}
+
+.fillable-form-icon-selector-button {
+  position: relative;
+  display: inline-block;
+
+  .btn {
+    align-items: center;
+    display: inline-flex;
+  }
+
+  .fillable-form-icon-selector-button-popover {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    width: 18rem;
+    margin-top: var(--pgn-spacing-spacer-1);
+    padding: var(--pgn-spacing-spacer-2);
+    background-color: var(--pgn-color-white);
+    border-radius: var(--pgn-size-border-radius-base);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    &:focus {
+      outline: none;
+    }
+
+    .icon-list {
+      max-height: 15rem;
+      overflow-y: auto;
+    }
+
+    .icon-symbol {
+      display: flex;
+      background: none;
+      border: 0;
+      border-radius: var(--pgn-size-border-radius-base);
+      color: var(--pgn-color-primary-500);
+      cursor: pointer;
+
+      &:hover,
+      &:focus,
+      &.active {
+        background-color: var(--pgn-color-light-300);
+      }
+    }
+  }
 }
 
 .fillable-form-studio-error {

@@ -6,6 +6,7 @@ import { postJson } from '../common/api';
 import { StudioConfig, HandlerResponse } from '../common/types';
 import { studioMessages } from '../common/messages';
 import { TinyMceEditor } from './TinyMceEditor';
+import { IconSelectorButton } from './IconSelectorButton';
 
 const NOTIFY_SAVE = 'save';
 const NOTIFY_ERROR = 'error';
@@ -21,12 +22,13 @@ interface StudioViewProps {
 const fieldId = (blockId: string, prefix: string) => `${prefix}-${blockId}`;
 
 export function StudioView({ initData, runtime }: StudioViewProps) {
-  const { block_id, display_name, instructions, form_group_id,
+  const { block_id, display_name, icon, instructions, form_group_id,
           form_group_options, field_label, show_download_button,
           download_button_info, pdf_order, handler_urls } = initData;
 
   const intl = useIntl();
   const [displayName, setDisplayName] = useState(display_name);
+  const [selectedIcon, setSelectedIcon] = useState(icon);
   const [instructionsText, setInstructionsText] = useState(instructions);
   const [formGroupId, setFormGroupId] = useState(form_group_id);
   const [fieldLabel, setFieldLabel] = useState(field_label);
@@ -76,6 +78,7 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
         handler_urls.studio_submit,
         {
           display_name: displayName,
+          icon: selectedIcon,
           instructions: instructionsText,
           form_group_id: formGroupId,
           field_label: fieldLabel,
@@ -115,6 +118,21 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setDisplayName(e.target.value)
             }
+          />
+        </Form.Group>
+
+        <Form.Group>
+          <Form.Label htmlFor={fieldId(block_id, 'icon')}>
+            {intl.formatMessage(studioMessages.labelIcon)}
+          </Form.Label>
+          <Form.Control.Feedback>
+            {intl.formatMessage(studioMessages.helpIcon)}
+          </Form.Control.Feedback>
+          <IconSelectorButton
+            id={fieldId(block_id, 'icon')}
+            icon={selectedIcon}
+            onChange={setSelectedIcon}
+            buttonLabel={intl.formatMessage(studioMessages.buttonChooseIcon)}
           />
         </Form.Group>
 

@@ -18,6 +18,7 @@ function createConfig(overrides: Partial<LearnerConfig> = {}): LearnerConfig {
   return {
     block_id: 'test-block-id',
     display_name: 'Test Form',
+    icon: 'edit',
     field_label: 'Test Question',
     instructions: '<p>Please answer carefully.</p>',
     current_text: '',
@@ -258,6 +259,16 @@ describe('LearnerView', () => {
     renderWithIntl(<LearnerView initData={createConfig({ show_download_button: true })} />);
     const link = screen.getByText('Download PDF');
     expect(link).toHaveAttribute('target', '_blank');
+  });
+
+  test('renders the configured icon in the header', () => {
+    const { container } = renderWithIntl(<LearnerView initData={createConfig({ icon: 'lightbulb' })} />);
+    expect(container.querySelector('.fillable-form-header-icon')).toHaveTextContent('lightbulb');
+  });
+
+  test('falls back to the pencil icon when icon is empty', () => {
+    const { container } = renderWithIntl(<LearnerView initData={createConfig({ icon: '' })} />);
+    expect(container.querySelector('.fillable-form-header-icon')).toHaveTextContent('edit');
   });
 
   describe('outside a course context (library preview)', () => {

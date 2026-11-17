@@ -42,6 +42,8 @@ from .types import (
 
 logger = logging.getLogger(__name__)
 
+MATERIAL_ICONS_URL = "https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+
 
 def _strip_html(text: str) -> str:
     """Reduce HTML to searchable plain text; script/style contents are dropped."""
@@ -65,6 +67,11 @@ class FillableFormXBlock(XBlock):
         default=_("Fillable Form Field"),
         scope=Scope.settings,
         help=_("Display name for this component in Studio"),
+    )
+    icon = String(
+        default="edit",
+        scope=Scope.settings,
+        help=_("Material Icons (outlined) name of the icon shown next to the title"),
     )
     instructions = String(
         default="",
@@ -164,6 +171,9 @@ class FillableFormXBlock(XBlock):
     ) -> Fragment:
         """Build a Fragment with the standard CSS/JS loading pattern."""
         fragment = Fragment()
+        # Font for the Material Icons; its CSS class is redefined in our
+        # stylesheet because the page CSS does not reach the shadow DOM.
+        fragment.add_resource_url(MATERIAL_ICONS_URL, "text/css", "head")
         class_attr = f' class="{div_class}"' if div_class else ""
         fragment.add_content(
             f'<div id="{div_prefix}-{self.scope_ids.usage_id}"{class_attr}></div>'
@@ -194,6 +204,7 @@ class FillableFormXBlock(XBlock):
         init_data = LearnerInitData(
             block_id=str(self.scope_ids.usage_id),
             display_name=self.display_name,
+            icon=self.icon,
             field_label=self.field_label,
             instructions=self.instructions,
             current_text=current_text,
@@ -321,6 +332,7 @@ class FillableFormXBlock(XBlock):
         init_data = StudioInitData(
             block_id=str(self.scope_ids.usage_id),
             display_name=self.display_name,
+            icon=self.icon,
             instructions=self.instructions,
             form_group_id=self.form_group_id,
             form_group_options=get_form_group_options(course_key) if course_key else [],
@@ -358,6 +370,7 @@ class FillableFormXBlock(XBlock):
         validated = StudioSaveData.model_validate(data)
 
         self.display_name = validated.display_name
+        self.icon = validated.icon
         self.instructions = validated.instructions
         self.form_group_id = validated.form_group_id
         self.field_label = validated.field_label

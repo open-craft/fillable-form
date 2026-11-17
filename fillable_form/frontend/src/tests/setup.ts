@@ -11,6 +11,7 @@ beforeEach(() => {
 
 jest.mock('@openedx/paragon', () => ({
   Icon: () => null,
+  Sticky: ({ children }: any) => children,
   Stack: ({ children, direction, gap, reversed, ...props }: any) => {
     const React = require('react');
     return React.createElement('div', props, children);
@@ -41,7 +42,7 @@ jest.mock('@openedx/paragon', () => ({
   },
   Form: (() => {
     const React = require('react');
-    const Control = ({ children, ...props }: any) =>
+    const Control = ({ children, trailingElement, ...props }: any) =>
       React.createElement('input', props, children);
     Control.Feedback = ({ children }: any) =>
       React.createElement('div', {}, children);
@@ -65,7 +66,6 @@ jest.mock('@openedx/paragon', () => ({
 jest.mock('@openedx/paragon/icons', () => ({
   Close: () => null,
   Download: () => null,
-  EditOutline: () => null,
   InfoOutline: () => null,
 }));
 

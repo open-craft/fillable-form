@@ -60,6 +60,18 @@ export const studioMessages = defineMessages({
     id: 'fillable.form.studio.label.display.name',
     defaultMessage: 'Display Name',
   },
+  labelIcon: {
+    id: 'fillable.form.studio.label.icon',
+    defaultMessage: 'Icon',
+  },
+  helpIcon: {
+    id: 'fillable.form.studio.help.icon',
+    defaultMessage: 'Icon shown next to the title.',
+  },
+  buttonChooseIcon: {
+    id: 'fillable.form.studio.button.choose.icon',
+    defaultMessage: 'Choose icon',
+  },
   labelInstructions: {
     id: 'fillable.form.studio.label.instructions',
     defaultMessage: 'Introduction',

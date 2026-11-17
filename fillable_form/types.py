@@ -5,6 +5,7 @@ class LearnerInitData(BaseModel):
     """Init data passed to the learner React app."""
     block_id: str
     display_name: str
+    icon: str
     field_label: str
     instructions: str
     current_text: str
@@ -29,6 +30,7 @@ class StudioInitData(BaseModel):
     """Init data passed to the Studio React app."""
     block_id: str
     display_name: str
+    icon: str
     instructions: str
     form_group_id: str
     form_group_options: list[str] = Field(default_factory=list)
@@ -45,6 +47,7 @@ class StudioInitData(BaseModel):
 class StudioSaveData(BaseModel):
     """Payload from the Studio editor submit handler."""
     display_name: str
+    icon: str
     instructions: str
     form_group_id: str
     field_label: str

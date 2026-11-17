@@ -4,6 +4,7 @@ import type { XBlockConfig } from '@opencraft/xblock-react-utils';
 export interface LearnerConfig {
   block_id: string;
   display_name: string;
+  icon: string;                 // Material Icons (outlined) name
   field_label: string;
   instructions: string;         // HTML from TinyMCE
   current_text: string;
@@ -22,6 +23,7 @@ export interface LearnerConfig {
 export interface StudioConfig {
   block_id: string;
   display_name: string;
+  icon: string;                 // Material Icons (outlined) name
   instructions: string;         // HTML from TinyMCE
   form_group_id: string;
   form_group_options: string[]; // Existing form group IDs in the course

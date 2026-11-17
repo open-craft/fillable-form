@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { Icon, Stack } from '@openedx/paragon';
-import { EditOutline } from '@openedx/paragon/icons';
+import { Stack } from '@openedx/paragon';
 import { postJson } from '../common/api';
 import { LearnerConfig, SaveResponseResult } from '../common/types';
 import { learnerMessages } from '../common/messages';
@@ -21,6 +20,7 @@ export function LearnerView({ initData }: LearnerViewProps) {
     in_course_context,
     handler_urls,
     display_name,
+    icon,
     download_button_info,
   } = initData;
 
@@ -127,7 +127,9 @@ export function LearnerView({ initData }: LearnerViewProps) {
   return (
     <div className="fillable-form-learner" data-block-id={block_id}>
       <Stack direction="horizontal" gap={2} className="fillable-form-header mb-3">
-        <Icon src={EditOutline} className="fillable-form-header-icon" />
+        <span className="material-icons-outlined fillable-form-header-icon" aria-hidden="true">
+          {icon || 'edit'}
+        </span>
         <div className="fillable-form-header-divider" aria-hidden="true" />
         <h2 className="fillable-form-header-title h5 m-0">{display_name}</h2>
       </Stack>

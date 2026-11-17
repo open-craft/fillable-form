@@ -25,6 +25,7 @@ def mock_block():
         )
         # Set up basic fields
         block.display_name = "Test Field"
+        block.icon = "edit"
         block.instructions = "<p>Please fill this in.</p>"
         block.form_group_id = "group1"
         block.field_label = "Question 1"
@@ -52,13 +53,17 @@ class TestStudentView:
         assert "fillable-form-learner-" in content
         assert '<div id="fillable-form-learner-' in content
         # CSS is injected into the shadow DOM by the JS bundle, not linked.
-        assert not any(r.mimetype == "text/css" for r in fragment.resources)
+        # Only the Material Icons font is linked.
+        css_urls = [r.data for r in fragment.resources if r.mimetype == "text/css"]
+        assert len(css_urls) == 1
+        assert "Material+Icons+Outlined" in css_urls[0]
         mock_block.runtime.local_resource_url.assert_any_call(
             mock_block, "static/js/fillable_form_learner.js"
         )
         assert fragment.json_init_args["config"]["mfe_config_api"].endswith(
             "/api/mfe_config/v1?mfe=learning"
         )
+        assert fragment.json_init_args["icon"] == "edit"
         assert fragment.json_init_args["download_button_info"] == (
             mock_block.download_button_info
         )
@@ -245,7 +250,10 @@ class TestStudioView:
             fragment = mock_block.studio_view()
 
         # CSS is injected into the shadow DOM by the JS bundle, not linked.
-        assert not any(r.mimetype == "text/css" for r in fragment.resources)
+        # Only the Material Icons font is linked.
+        css_urls = [r.data for r in fragment.resources if r.mimetype == "text/css"]
+        assert len(css_urls) == 1
+        assert "Material+Icons+Outlined" in css_urls[0]
         assert fragment.json_init_args["config"]["mfe_config_api"].endswith(
             "/api/mfe_config/v1?mfe=learning"
         )
@@ -271,6 +279,7 @@ class TestStudioView:
         with patch("fillable_form.fillable_form.save_form_field") as mock_upsert:
             result = mock_block.studio_submit({
                 "display_name": "New Name",
+                "icon": "edit",
                 "instructions": "<p>New Instr</p>",
                 "form_group_id": "group2",
                 "field_label": "Q2",
@@ -298,6 +307,7 @@ class TestStudioView:
         with patch("fillable_form.fillable_form.save_form_field"):
             result = mock_block.studio_submit({
                 "display_name": "X",
+                "icon": "edit",
                 "instructions": "X",
                 "form_group_id": "X",
                 "field_label": "X",
@@ -315,6 +325,7 @@ class TestStudioView:
 
         result = mock_block.studio_submit({
             "display_name": "X",
+            "icon": "edit",
             "instructions": "X",
             "form_group_id": "X",
             "field_label": "X",
@@ -342,6 +353,7 @@ class TestStudioView:
         with patch("fillable_form.fillable_form.save_form_field"):
             result = mock_block.studio_submit({
                 "display_name": "X",
+                "icon": "edit",
                 "instructions": html,
                 "form_group_id": "X",
                 "field_label": "X",

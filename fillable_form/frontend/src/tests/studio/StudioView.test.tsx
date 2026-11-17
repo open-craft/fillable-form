@@ -61,6 +61,7 @@ function createConfig(overrides: Partial<StudioConfig> = {}): StudioConfig {
   return {
     block_id: 'test-block-id',
     display_name: 'My Form Field',
+    icon: 'edit',
     instructions: '<p>Instructions here</p>',
     form_group_id: 'group-alpha',
     form_group_options: ['group-alpha', 'group-beta'],
@@ -125,6 +126,7 @@ describe('StudioView', () => {
       '/handler/studio_submit',
       {
         display_name: 'My Form Field',
+        icon: 'edit',
         instructions: '<p>Instructions here</p>',
         form_group_id: 'group-alpha',
         field_label: 'Section Title',
@@ -340,6 +342,27 @@ describe('StudioView', () => {
     expect(postJson).toHaveBeenCalledWith(
       '/handler/studio_submit',
       expect.objectContaining({ download_button_info: 'Download all your answers.' }),
+    );
+  });
+
+  test('submits the icon chosen in the icon picker', async () => {
+    (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
+
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+
+    fireEvent.click(screen.getByText('Choose icon'));
+    fireEvent.click(screen.getByRole('button', { name: 'lightbulb' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Save'));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(postJson).toHaveBeenCalledWith(
+      '/handler/studio_submit',
+      expect.objectContaining({ icon: 'lightbulb' }),
     );
   });
 

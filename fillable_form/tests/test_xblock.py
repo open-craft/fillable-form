@@ -40,6 +40,10 @@ class TestXBlockDefaults:
         """form_group_id defaults to empty string."""
         assert block.form_group_id == ""
 
+    def test_icon_default(self, block):
+        """icon defaults to the Material Icons pencil."""
+        assert block.icon == "edit"
+
     def test_field_label_default(self, block):
         """field_label defaults to empty string."""
         assert block.field_label == ""
