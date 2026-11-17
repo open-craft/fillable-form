@@ -21,10 +21,14 @@
   color: var(--pgn-color-body-base, #1f2933);
   font-size: 16px;
   line-height: 24px;
-  margin: 0 auto 80px;
-  max-width: 1045px;
-  padding: 0;
   width: 100%;
+
+  .fillable-form-container {
+    box-sizing: border-box;
+    margin: 0 auto;
+    max-width: var(--pgn-exemplar-xblock-container-max-width, 1045px);
+    padding: var(--pgn-exemplar-xblock-container-padding, 32px);
+  }
 
   .fillable-form-header {
     .fillable-form-header-icon {
@@ -382,7 +386,7 @@
 }
 
 @media (max-width: 720px) {
-  .fillable-form-learner,
+  .fillable-form-learner .fillable-form-container,
   .fillable-form-studio {
     padding-left: var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 1rem));
     padding-right: var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 1rem));

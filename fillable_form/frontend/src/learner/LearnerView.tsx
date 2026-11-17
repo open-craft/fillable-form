@@ -126,50 +126,52 @@ export function LearnerView({ initData }: LearnerViewProps) {
 
   return (
     <div className="fillable-form-learner" data-block-id={block_id}>
-      <Stack direction="horizontal" gap={2} className="fillable-form-header mb-3">
-        <span className="material-icons-outlined fillable-form-header-icon" aria-hidden="true">
-          {icon || 'edit'}
-        </span>
-        <div className="fillable-form-header-divider" aria-hidden="true" />
-        <h2 className="fillable-form-header-title h5 m-0">{display_name}</h2>
-      </Stack>
-      
-      <p>
-        {instructions && (
-          <div
-            className="fillable-form-instructions"
-            dangerouslySetInnerHTML={{ __html: instructions }}
+      <div className="fillable-form-container">
+        <Stack direction="horizontal" gap={2} className="fillable-form-header mb-3">
+          <span className="material-icons-outlined text-primary fillable-form-header-icon" aria-hidden="true">
+            {icon || 'edit'}
+          </span>
+          <div className="fillable-form-header-divider" aria-hidden="true" />
+          <h2 className="fillable-form-header-title h5 m-0">{display_name}</h2>
+        </Stack>
+
+        <p>
+          {instructions && (
+            <div
+              className="fillable-form-instructions"
+              dangerouslySetInnerHTML={{ __html: instructions }}
+            />
+          )}
+          {field_label && (
+            <span className="fillable-form-field-label">{field_label}</span>
+          )}
+        </p>
+
+        <div className="fillable-form-response">
+          <textarea
+            className="fillable-form-textarea rounded-lg"
+            value={text}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder={intl.formatMessage(learnerMessages.placeholder)}
+            rows={6}
+            aria-label={field_label || intl.formatMessage(learnerMessages.fallbackLabel)}
+          />
+
+          <div className="fillable-form-meta">
+            <span className={`fillable-form-status fillable-form-status-${saveState}`}>
+              {saveStatus}
+            </span>
+          </div>
+        </div>
+
+        {show_download_button && downloadUrl && (
+          <DownloadButton
+            downloadUrl={downloadUrl}
+            downloadButtonInfo={download_button_info}
           />
         )}
-        {field_label && (
-          <span className="fillable-form-field-label">{field_label}</span>
-        )}
-      </p>
-
-      <div className="fillable-form-response">
-        <textarea
-          className="fillable-form-textarea rounded-lg"
-          value={text}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          placeholder={intl.formatMessage(learnerMessages.placeholder)}
-          rows={6}
-          aria-label={field_label || intl.formatMessage(learnerMessages.fallbackLabel)}
-        />
-
-        <div className="fillable-form-meta">
-          <span className={`fillable-form-status fillable-form-status-${saveState}`}>
-            {saveStatus}
-          </span>
-        </div>
       </div>
-
-      {show_download_button && downloadUrl && (
-        <DownloadButton
-          downloadUrl={downloadUrl}
-          downloadButtonInfo={download_button_info}
-        />
-      )}
     </div>
   );
 }

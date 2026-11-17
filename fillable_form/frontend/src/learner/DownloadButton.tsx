@@ -12,7 +12,7 @@ export const DownloadButton = ({
   downloadUrl,
   downloadButtonInfo
 }: DownloadButtonProps) => (
-  <Card orientation='horizontal' className='p-2'>
+  <Card orientation='horizontal' className='p-2 bg-primary text-white'>
     <Card.Section >
       <Stack direction="horizontal" gap={3}>
         <Icon src={InfoOutline} />
@@ -31,7 +31,7 @@ export const DownloadButton = ({
           as="a"
           href={downloadUrl}
           target="_blank"
-          variant="tertiary"
+          variant="inverse-tertiary"
           iconAfter={Download}
         >
           <FormattedMessage {...learnerMessages.downloadButton} />
