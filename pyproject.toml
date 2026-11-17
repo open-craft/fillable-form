@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fillable-form-xblock"
-version = "0.2.2"
+version = "0.2.3"
 description = "XBlock for progressive fillable forms with PDF download"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -23,6 +23,15 @@ dependencies = [
     "nh3>=0.2",
 ]
 
+[project.optional-dependencies]
+test = [
+    "Django>=4.2",
+    "django-model-utils",
+    "edx-opaque-keys[django]",
+    "pytest",
+    "pytest-django",
+]
+
 [project.entry-points]
 "xblock.v1" = { fillable_form = "fillable_form.fillable_form:FillableFormXBlock" }
 "lms.djangoapp" = { fillable_form = "fillable_form.apps:FillableFormConfig" }
@@ -39,3 +48,8 @@ exclude = ["*tests*"]
     "static/pdf/templates/*.html",
     "static/pdf/*.css",
 ]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "test_settings"
+pythonpath = ["."]
+testpaths = ["fillable_form/tests"]

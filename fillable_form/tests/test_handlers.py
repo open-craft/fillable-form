@@ -7,7 +7,17 @@ import json
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
+from django.http import Http404
 from opaque_keys.edx.keys import UsageKey
+from pydantic import ValidationError
+from webob import Request
+
+
+def call_json_handler(handler, data):
+    """POST ``data`` as JSON to an XBlock json_handler, as the runtime does, and decode the reply."""
+    request = Request.blank("/", method="POST", body=json.dumps(data).encode("utf-8"))
+    response = handler(request)
+    return json.loads(response.body)
 
 
 @pytest.fixture
@@ -121,7 +131,7 @@ class TestSaveResponseHandler:
 
         with patch("fillable_form.fillable_form.save_response") as mock_save:
             mock_save.return_value = Mock(modified=Mock(isoformat=lambda: "2026-05-13T10:00:00"))
-            result = mock_block.save_response({"response_text": "Hello"})
+            result = call_json_handler(mock_block.save_response, {"response_text": "Hello"})
 
         assert result["success"] is True
         assert result["modified"] == "2026-05-13T10:00:00"
@@ -130,18 +140,18 @@ class TestSaveResponseHandler:
         """Returns error when user not authenticated."""
         mock_block._get_django_user = Mock(return_value=(None, None))
 
-        result = mock_block.save_response({"response_text": "Hello"})
+        result = call_json_handler(mock_block.save_response, {"response_text": "Hello"})
 
         assert result["success"] is False
         assert "authenticated" in result["error"].lower()
 
     def test_save_response_invalid_payload(self, mock_block):
-        """Returns error when fields missing."""
+        """Rejects a payload with missing fields."""
         mock_user = Mock(id=1)
         mock_block._get_django_user = Mock(return_value=(mock_user, None))
 
-        with pytest.raises(Exception):
-            mock_block.save_response({})  # missing response_text
+        with pytest.raises(ValidationError):
+            call_json_handler(mock_block.save_response, {})  # missing response_text
 
 
 class TestDownloadPdfHandler:
@@ -151,7 +161,7 @@ class TestDownloadPdfHandler:
         """Returns 404 when user not authenticated."""
         mock_block._get_django_user = Mock(return_value=(None, None))
 
-        with pytest.raises(Exception):
+        with pytest.raises(Http404):
             mock_block.download_pdf(Mock())
 
     def test_download_pdf_returns_pdf(self, mock_block):
@@ -223,6 +233,22 @@ class TestDownloadPdfHandler:
         form_data = mock_pdf.call_args.args[1]
         assert form_data.fields == []
 
+    def test_download_pdf_falls_back_to_course_key_without_course_overview(self, mock_block):
+        """Outside edx-platform (no CourseOverview), the course key is used as the course name."""
+        mock_django_user = Mock(id=1)
+        mock_xblock_user = Mock(emails=[], full_name="Test User")
+        mock_xblock_user.opt_attrs = {"edx-platform.username": "testuser"}
+        mock_block._get_django_user = Mock(return_value=(mock_django_user, mock_xblock_user))
+
+        with patch("fillable_form.fillable_form.get_registered_form_fields", return_value=[]):
+            with patch("fillable_form.fillable_form.get_form_group_responses", return_value={}):
+                with patch("fillable_form.fillable_form.generate_pdf") as mock_pdf:
+                    mock_pdf.return_value = b"%PDF-1.4 fake pdf"
+                    mock_block.download_pdf(Mock())
+
+        metadata = mock_pdf.call_args.args[0]
+        assert metadata.info.course_name == str(mock_block.scope_ids.usage_id.course_key)
+
 
 class TestStudioView:
     """Tests for studio_view and studio_submit."""
@@ -246,7 +272,7 @@ class TestStudioView:
         mock_block._get_django_user = Mock(return_value=(mock_user, None))
 
         with patch("fillable_form.fillable_form.save_form_field") as mock_upsert:
-            result = mock_block.studio_submit({
+            result = call_json_handler(mock_block.studio_submit, {
                 "display_name": "New Name",
                 "instructions": "<p>New Instr</p>",
                 "form_group_id": "group2",
@@ -264,30 +290,36 @@ class TestStudioView:
         assert mock_block.pdf_order == 20
         mock_upsert.assert_called_once()
 
-    def test_studio_submit_permission_denied(self, mock_block):
-        """Returns permission denied when user is not staff."""
-        mock_user = Mock(id=1, is_staff=False)
-        mock_block._get_django_user = Mock(return_value=(mock_user, None))
+    def test_studio_submit_unauthenticated(self, mock_block):
+        """Returns an error and saves nothing when the user isn't authenticated.
 
-        result = mock_block.studio_submit({
-            "display_name": "X",
-            "instructions": "X",
-            "form_group_id": "X",
-            "field_label": "X",
-            "show_download_button": False,
-            "pdf_order": 0,
-        })
+        Course-level write permission is enforced by Studio before the handler
+        is reached, so the block itself only checks for an authenticated user.
+        """
+        mock_block._get_django_user = Mock(return_value=(None, None))
+
+        with patch("fillable_form.fillable_form.save_form_field") as mock_upsert:
+            result = call_json_handler(mock_block.studio_submit, {
+                "display_name": "X",
+                "instructions": "X",
+                "form_group_id": "X",
+                "field_label": "X",
+                "show_download_button": False,
+                "pdf_order": 0,
+            })
 
         assert result["success"] is False
-        assert "permission" in result["error"].lower()
+        assert "authenticated" in result["error"].lower()
+        assert mock_block.display_name == "Test Field"
+        mock_upsert.assert_not_called()
 
     def test_studio_submit_invalid_payload(self, mock_block):
-        """Returns error when required fields missing."""
+        """Rejects a payload with missing fields."""
         mock_user = Mock(id=1, is_staff=True)
         mock_block._get_django_user = Mock(return_value=(mock_user, None))
 
-        with pytest.raises(Exception):
-            mock_block.studio_submit({})  # missing all fields
+        with pytest.raises(ValidationError):
+            call_json_handler(mock_block.studio_submit, {})  # missing all fields
 
     def test_studio_submit_preserves_instructions_html(self, mock_block):
         """HTML in instructions is stored as-is."""
@@ -296,7 +328,7 @@ class TestStudioView:
 
         html = "<p><strong>Bold</strong> instructions</p>"
         with patch("fillable_form.fillable_form.save_form_field"):
-            result = mock_block.studio_submit({
+            result = call_json_handler(mock_block.studio_submit, {
                 "display_name": "X",
                 "instructions": html,
                 "form_group_id": "X",

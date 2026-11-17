@@ -1,6 +1,10 @@
 """
 Mock injection for edx-platform dependencies when running tests outside
 of an Open edX environment.
+
+Only edx-platform modules are mocked here. Real libraries the block depends on
+(webob, opaque_keys, model_utils) come from the ``test`` extra in
+pyproject.toml; mocking them would leak into XBlock and Django themselves.
 """
 
 import sys
@@ -19,15 +23,6 @@ def setup_mocks():
         "xmodule": MagicMock(),
         "xmodule.modulestore": MagicMock(),
         "xmodule.modulestore.django": MagicMock(),
-        "opaque_keys": MagicMock(),
-        "opaque_keys.edx": MagicMock(),
-        "opaque_keys.edx.django": MagicMock(),
-        "opaque_keys.edx.django.models": MagicMock(),
-        "opaque_keys.edx.keys": MagicMock(),
-        "model_utils": MagicMock(),
-        "model_utils.models": MagicMock(),
-        "webob": MagicMock(),
-        "webob.response": MagicMock(),
     }
     for name, mock in mocks.items():
         if name not in sys.modules:

@@ -109,6 +109,24 @@ npm run watch          # development (rebuilds on change)
 npm test               # run Jest tests
 ```
 
+### Running tests
+
+The Python tests need Python 3.11+ and the system libraries WeasyPrint uses
+for PDF generation (Pango; e.g. `brew install pango` on macOS or
+`apt install libpango-1.0-0 libpangoft2-1.0-0` on Debian/Ubuntu). The frontend
+(Jest) tests need Node.js. From the repository root, in a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+make requirements   # pip install -e '.[test]' and npm ci in the frontend
+make test           # runs both suites
+```
+
+To run one suite, use `make test-python` (pytest) or `make test-frontend` (Jest).
+The Python tests use a minimal Django setup (`test_settings.py`, SQLite in
+memory), so they don't need an Open edX installation.
+
 CSS is authored once in `src/fillable_form.css` and compiled by Webpack into
 four outputs:
 - `static/css/fillable_form.css` — non-prefixed (LMS iframes + MFE Studio)

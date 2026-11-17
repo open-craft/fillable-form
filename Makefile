@@ -1,4 +1,4 @@
-.PHONY: build install test clean
+.PHONY: build install requirements test test-python test-frontend clean
 
 build:
 	cd fillable_form/frontend && npm run build
@@ -6,10 +6,16 @@ build:
 install:
 	pip install -e .
 
-test:
-	python -m pytest fillable_form/tests/ -v
+requirements: ## install Python and frontend test dependencies
+	pip install -e '.[test]'
+	cd fillable_form/frontend && npm ci
 
-test-frontend:
+test: test-python test-frontend ## run all tests
+
+test-python: ## run the Python tests
+	python -m pytest -v
+
+test-frontend: ## run the frontend (Jest) tests
 	cd fillable_form/frontend && npm test
 
 clean:
