@@ -1,19 +1,58 @@
+.fillable-form-block .material-icons-outlined {
+  font-family: 'Material Icons Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
+
 .fillable-form-block .fillable-form-learner {
   box-sizing: border-box;
   color: var(--pgn-color-body-base, #1f2933);
   font-size: 16px;
   line-height: 24px;
-  margin: 0 auto 80px;
-  max-width: 1045px;
-  padding: 0;
   width: 100%;
+
+  .fillable-form-block .fillable-form-container {
+    box-sizing: border-box;
+    margin: 0 auto;
+    max-width: var(--pgn-exemplar-xblock-container-max-width, 1045px);
+    padding: var(--pgn-exemplar-xblock-container-padding, 32px);
+  }
+
+  .fillable-form-block .fillable-form-header {
+    .fillable-form-block .fillable-form-header-icon {
+      font-size: 3rem;
+    }
+
+    .fillable-form-block .fillable-form-header-divider {
+      align-self: stretch;
+      flex-shrink: 0;
+      width: 2px;
+      background-color: black;
+    }
+
+    .fillable-form-block .fillable-form-header-title {
+      line-height: 1.5rem;
+    }
+  }
 }
 
 .fillable-form-block .fillable-form-instructions {
   color: var(--pgn-color-body-base, #2f2f2f);
   font-size: 16px;
   line-height: 24px;
-  margin: 0 0 42px;
+  margin: 0 0;
 }
 
 .fillable-form-block .fillable-form-instructions h1,
@@ -45,7 +84,6 @@
 .fillable-form-block .fillable-form-textarea {
   background: var(--pgn-color-form-input-bg-base, var(--pgn-color-white, #fff));
   border: var(--pgn-size-form-input-width-border, 1px) solid var(--pgn-color-form-input-border, var(--pgn-color-border, #d5d5d5));
-  border-radius: 0;
   color: var(--pgn-color-form-input-base, var(--pgn-color-body-base, #222));
   display: block;
   font-family: inherit;
@@ -55,7 +93,7 @@
   padding: 21px 22px;
   resize: vertical;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  width: 95%;
+  width: 100%;
 }
 
 .fillable-form-block .fillable-form-textarea:focus {
@@ -260,6 +298,53 @@
   margin: 0;
 }
 
+.fillable-form-block .fillable-form-icon-selector-button {
+  position: relative;
+  display: inline-block;
+
+  .fillable-form-block .btn {
+    align-items: center;
+    display: inline-flex;
+  }
+
+  .fillable-form-block .fillable-form-icon-selector-button-popover {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    width: 18rem;
+    margin-top: var(--pgn-spacing-spacer-1);
+    padding: var(--pgn-spacing-spacer-2);
+    background-color: var(--pgn-color-white);
+    border-radius: var(--pgn-size-border-radius-base);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    .fillable-form-block &:focus {
+      outline: none;
+    }
+
+    .fillable-form-block .icon-list {
+      max-height: 15rem;
+      overflow-y: auto;
+    }
+
+    .fillable-form-block .icon-symbol {
+      display: flex;
+      background: none;
+      border: 0;
+      border-radius: var(--pgn-size-border-radius-base);
+      color: var(--pgn-color-primary-500);
+      cursor: pointer;
+
+      .fillable-form-block &:hover,
+      .fillable-form-block &:focus,
+      .fillable-form-block &.active {
+        background-color: var(--pgn-color-light-300);
+      }
+    }
+  }
+}
+
 .fillable-form-block .fillable-form-studio-error {
   color: var(--pgn-color-danger-base, var(--pgn-color-danger, #dc3545));
   background: var(--pgn-color-danger-100, var(--pgn-color-danger-bg, #f8d7da));
@@ -301,7 +386,7 @@
 }
 
 @media (max-width: 720px) {
-  .fillable-form-block .fillable-form-learner,
+  .fillable-form-block .fillable-form-learner .fillable-form-container,
   .fillable-form-block .fillable-form-studio {
     padding-left: var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 1rem));
     padding-right: var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 1rem));
