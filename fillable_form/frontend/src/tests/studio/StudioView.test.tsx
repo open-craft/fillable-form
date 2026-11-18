@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { StudioView } from '../../studio/StudioView';
-import type { StudioConfig } from '../../common/types';
 import { studioMessages } from '../../common/messages';
+import type { StudioConfig } from '../../common/types';
 
 // Mock the API module
 jest.mock('../../common/api', () => ({
@@ -293,14 +293,15 @@ describe('StudioView', () => {
     expect(screen.getByText('Save failed.')).toBeInTheDocument();
   });
 
+  // Help texts are read from the message catalogue so copy edits don't break these tests.
   test('shows help text for form group ID', () => {
     renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
-    expect(screen.getByText(studioMessages.helpFormGroupId.defaultMessage)).toBeInTheDocument();
+    expect(screen.getByText(studioMessages.helpFormGroupId.defaultMessage as string)).toBeInTheDocument();
   });
 
   test('shows help text for field label', () => {
     renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
-    expect(screen.getByText(studioMessages.helpFieldLabel.defaultMessage)).toBeInTheDocument();
+    expect(screen.getByText(studioMessages.helpFieldLabel.defaultMessage as string)).toBeInTheDocument();
   });
 
   test('toggles download button checkbox', () => {
