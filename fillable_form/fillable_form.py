@@ -278,6 +278,7 @@ class FillableFormXBlock(XBlock):
         response_map = get_form_group_responses(
             django_user, course_key, [field.usage_key for field in fields]
         )
+        unit_names = self._get_unit_names(course_key, [field.usage_key for field in fields])
 
         form_data = FormGroupData(
             form_group_id=self.form_group_id,
@@ -287,6 +288,7 @@ class FillableFormXBlock(XBlock):
                     "field_label": f.field_label,
                     "instructions": f.instructions,
                     "response_text": response_map.get(str(f.usage_key), ""),
+                    "unit_name": unit_names.get(str(f.usage_key), ""),
                 }
                 for f in fields
             ],
@@ -328,6 +330,32 @@ class FillableFormXBlock(XBlock):
             content_type="application/pdf",
             content_disposition=f'attachment; filename="{filename}.pdf"',
         )
+
+    @staticmethod
+    def _get_unit_names(course_key: CourseKey, usage_keys: list[Any]) -> dict[str, str]:
+        """Map each usage key to the display name of the unit that contains it.
+
+        Fields whose unit can't be found (e.g. deleted blocks still in the registry)
+        are left out. Outside edx-platform (no modulestore) the map is empty.
+        """
+        try:
+            from xmodule.modulestore.django import modulestore
+            from xmodule.modulestore.exceptions import ItemNotFoundError
+        except ImportError:
+            return {}
+
+        store = modulestore()
+        unit_names = {}
+        # bulk_operations caches the course structure, so each lookup doesn't hit the database.
+        with store.bulk_operations(course_key):
+            for usage_key in usage_keys:
+                try:
+                    parent_key = store.get_parent_location(usage_key)
+                    if parent_key:
+                        unit_names[str(usage_key)] = store.get_item(parent_key).display_name_with_default
+                except ItemNotFoundError:
+                    continue
+        return unit_names
 
     def _course_key(self) -> CourseKey | None:
         """Return the containing course key, or None outside a course (e.g. content libraries)."""

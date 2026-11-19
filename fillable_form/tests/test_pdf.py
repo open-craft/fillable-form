@@ -84,6 +84,21 @@ class TestPdfGeneration:
         assert "Test Student" in result
         assert "student@example.com" in result
 
+    def test_response_meta_includes_unit_name(self, sample_metadata):
+        """The unit name goes between the student name and the date; it's omitted when empty."""
+        data = FormGroupData(
+            form_group_id="test",
+            fields=[
+                FormFieldData(field_label="Q1", instructions="", response_text="A", unit_name="Unit One"),
+                FormFieldData(field_label="Q2", instructions="", response_text="B"),
+            ],
+        )
+        result = _render_html(sample_metadata, data)
+
+        assert "Test Student | Unit One |" in result
+        assert "Test Student | Unit One | Unit" not in result
+        assert result.count("Test Student |") == 2
+
     def test_empty_responses_show_placeholder(self, sample_metadata, sample_form_data):
         """Fields with no response show placeholder text."""
         result = _render_html(sample_metadata, sample_form_data)

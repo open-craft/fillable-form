@@ -4,6 +4,8 @@ Tests for XBlock handlers.
 Run with: python -m pytest fillable_form/tests/test_handlers.py -v
 """
 import json
+import sys
+import types
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
@@ -226,6 +228,29 @@ class TestDownloadPdfHandler:
         assert form_data.fields[0].response_text == "My answer"
         assert form_data.fields[1].response_text == ""
 
+    def test_download_pdf_includes_unit_names(self, mock_block):
+        """Each field carries the name of its unit; unknown units get an empty name."""
+        mock_django_user = Mock(id=1)
+        mock_xblock_user = Mock(emails=[], full_name="Test User")
+        mock_xblock_user.opt_attrs = {"edx-platform.username": "testuser"}
+        mock_block._get_django_user = Mock(return_value=(mock_django_user, mock_xblock_user))
+
+        fields = [
+            Mock(field_label="Q1", instructions="", usage_key="block1"),
+            Mock(field_label="Q2", instructions="", usage_key="block2"),
+        ]
+
+        with patch("fillable_form.fillable_form.get_registered_form_fields", return_value=fields):
+            with patch("fillable_form.fillable_form.get_form_group_responses", return_value={}):
+                with patch.object(mock_block, "_get_unit_names", return_value={"block1": "Unit 1"}):
+                    with patch("fillable_form.fillable_form.generate_pdf") as mock_pdf:
+                        mock_pdf.return_value = b"%PDF-1.4 fake pdf"
+                        mock_block.download_pdf(Mock())
+
+        form_data = mock_pdf.call_args.args[1]
+        assert form_data.fields[0].unit_name == "Unit 1"
+        assert form_data.fields[1].unit_name == ""
+
     def test_download_pdf_handles_empty_registry(self, mock_block):
         """Empty registry generates an empty form without falling back to course scan."""
         mock_django_user = Mock(id=1)
@@ -262,6 +287,61 @@ class TestDownloadPdfHandler:
 
         metadata = mock_pdf.call_args.args[0]
         assert metadata.info.course_name == str(mock_block.scope_ids.usage_id.course_key)
+
+
+class TestGetUnitNames:
+    """Tests for _get_unit_names, with a fake edx-platform modulestore."""
+
+    @staticmethod
+    def _fake_modulestore(parents, units):
+        """Install fake xmodule modules; parents maps block -> unit key, units maps unit key -> name."""
+
+        class ItemNotFoundError(Exception):
+            pass
+
+        def get_item(key):
+            if key not in units:
+                raise ItemNotFoundError(key)
+            return Mock(display_name_with_default=units[key])
+
+        store = MagicMock()
+        store.get_parent_location.side_effect = parents.get
+        store.get_item.side_effect = get_item
+
+        modulestore_pkg = types.ModuleType("xmodule.modulestore")
+        modulestore_pkg.__path__ = []
+        django_mod = types.ModuleType("xmodule.modulestore.django")
+        django_mod.modulestore = lambda: store
+        exceptions_mod = types.ModuleType("xmodule.modulestore.exceptions")
+        exceptions_mod.ItemNotFoundError = ItemNotFoundError
+        return store, {
+            "xmodule.modulestore": modulestore_pkg,
+            "xmodule.modulestore.django": django_mod,
+            "xmodule.modulestore.exceptions": exceptions_mod,
+        }
+
+    def test_maps_blocks_to_unit_names(self):
+        """Returns the parent unit name per block and skips blocks without a unit."""
+        from fillable_form.fillable_form import FillableFormXBlock
+
+        store, modules = self._fake_modulestore(
+            parents={"block1": "unit1", "block2": "unit2", "block3": "missing"},
+            units={"unit1": "Unit One", "unit2": "Unit Two"},
+        )
+        with patch.dict(sys.modules, modules):
+            result = FillableFormXBlock._get_unit_names(
+                "course-v1:X+Y+Z", ["block1", "block2", "block3", "orphan"]
+            )
+
+        assert result == {"block1": "Unit One", "block2": "Unit Two"}
+        store.bulk_operations.assert_called_once_with("course-v1:X+Y+Z")
+
+    def test_returns_empty_without_modulestore(self):
+        """Outside edx-platform there is no modulestore, so no unit names."""
+        from fillable_form.fillable_form import FillableFormXBlock
+
+        with patch.dict(sys.modules, {"xmodule.modulestore.exceptions": None}):
+            assert FillableFormXBlock._get_unit_names("course-v1:X+Y+Z", ["block1"]) == {}
 
 
 class TestStudioView:

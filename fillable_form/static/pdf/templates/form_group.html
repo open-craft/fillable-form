@@ -6,7 +6,7 @@
     <h2>{{ field.field_label }}</h2>
     <div class="response">
         <div class="response-meta">
-            {{ student.name }} | {{ time.day }} {{ time.strftime('%B %Y, %I:%M%p UTC') }}
+            {{ student.name }} |{% if field.unit_name %} {{ field.unit_name }} |{% endif %} {{ time.day }} {{ time.strftime('%B %Y, %I:%M%p UTC') }}
         </div>
         {% if field.response_text %}
         <div class="response-text">{{ field.response_text | e }}</div>
