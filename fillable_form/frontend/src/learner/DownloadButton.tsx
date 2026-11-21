@@ -12,7 +12,7 @@ export const DownloadButton = ({
   downloadUrl,
   downloadButtonInfo
 }: DownloadButtonProps) => (
-  <Card orientation='horizontal' className='p-2 bg-primary text-white'>
+  <Card orientation='horizontal' className='fillable-form-download-card p-2'>
     <Card.Section >
       <Stack direction="horizontal" gap={3}>
         <Icon src={InfoOutline} />
