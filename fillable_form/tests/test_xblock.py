@@ -40,6 +40,10 @@ class TestXBlockDefaults:
         """form_group_id defaults to empty string."""
         assert block.form_group_id == ""
 
+    def test_icon_default(self, block):
+        """icon defaults to the Material Icons pencil."""
+        assert block.icon == "edit"
+
     def test_field_label_default(self, block):
         """field_label defaults to empty string."""
         assert block.field_label == ""
@@ -47,6 +51,14 @@ class TestXBlockDefaults:
     def test_show_download_button_default(self, block):
         """show_download_button defaults to False."""
         assert block.show_download_button is False
+
+    def test_download_button_info_default(self, block):
+        """download_button_info defaults to empty string (the frontend provides the text)."""
+        assert block.download_button_info == ""
+
+    def test_color_variant_default(self, block):
+        """color_variant defaults to empty string (the block's default colours)."""
+        assert block.color_variant == ""
 
     def test_pdf_order_default(self, block):
         """pdf_order defaults to 0."""
@@ -213,6 +225,7 @@ class TestLibraryContext:
 
         payload = {
             "display_name": "Library Form",
+            "icon": "edit",
             "instructions": "<p>Fill this in</p>",
             "form_group_id": "",
             "field_label": "Answer",

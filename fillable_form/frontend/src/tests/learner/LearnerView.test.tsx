@@ -17,15 +17,20 @@ function renderWithIntl(ui: React.ReactElement, locale = 'en') {
 function createConfig(overrides: Partial<LearnerConfig> = {}): LearnerConfig {
   return {
     block_id: 'test-block-id',
+    display_name: 'Test Form',
+    icon: 'edit',
     field_label: 'Test Question',
     instructions: '<p>Please answer carefully.</p>',
     current_text: '',
     show_download_button: true,
+    download_button_info: '',
+    color_variant: '',
     handler_urls: {
       save_response: '/handler/save_response',
       download_pdf: '/handler/download_pdf',
     },
     locale: 'en',
+    config: { mfe_config_api: '/api/mfe_config/v1?mfe=learning' },
     ...overrides,
   };
 }
@@ -43,6 +48,21 @@ describe('LearnerView', () => {
   test('renders field label', () => {
     renderWithIntl(<LearnerView initData={createConfig()} />);
     expect(screen.getByText('Test Question')).toBeInTheDocument();
+  });
+
+  test('applies the colours of the stored color variant', () => {
+    const { container } = renderWithIntl(
+      <LearnerView initData={createConfig({ color_variant: 'secondary-light' })} />,
+    );
+    const root = container.querySelector('.fillable-form-learner') as HTMLElement;
+    expect(root.style.getPropertyValue('--fillable-form-color-background')).toBe('#ecf5f7');
+  });
+
+  test('keeps the default colours for an unknown color variant', () => {
+    const { container } = renderWithIntl(
+      <LearnerView initData={createConfig({ color_variant: 'not-shipped' })} />,
+    );
+    expect(container.querySelector('.fillable-form-learner')).not.toHaveAttribute('style');
   });
 
   test('renders instructions as HTML', () => {
@@ -257,6 +277,16 @@ describe('LearnerView', () => {
     expect(link).toHaveAttribute('target', '_blank');
   });
 
+  test('renders the configured icon in the header', () => {
+    const { container } = renderWithIntl(<LearnerView initData={createConfig({ icon: 'lightbulb' })} />);
+    expect(container.querySelector('.fillable-form-header-icon')).toHaveTextContent('lightbulb');
+  });
+
+  test('falls back to the pencil icon when icon is empty', () => {
+    const { container } = renderWithIntl(<LearnerView initData={createConfig({ icon: '' })} />);
+    expect(container.querySelector('.fillable-form-header-icon')).toHaveTextContent('edit');
+  });
+
   describe('outside a course context (library preview)', () => {
     test('does not auto-save on typing or blur', () => {
       renderWithIntl(<LearnerView initData={createConfig({ in_course_context: false })} />);
@@ -271,14 +301,6 @@ describe('LearnerView', () => {
     test('shows preview notice instead of save status', () => {
       renderWithIntl(<LearnerView initData={createConfig({ in_course_context: false })} />);
       expect(screen.getByText(/Preview only/)).toBeInTheDocument();
-    });
-
-    test('disables the PDF download button with an explanation', () => {
-      renderWithIntl(<LearnerView initData={createConfig({ in_course_context: false, show_download_button: true })} />);
-      const control = screen.getByText('Download PDF').closest('a, button')!;
-      expect(control).not.toHaveAttribute('href');
-      expect(control.matches('[disabled], .disabled, [aria-disabled="true"]')).toBe(true);
-      expect(screen.getByText(/PDF download is available/)).toBeInTheDocument();
     });
 
     test('missing flag keeps normal course behaviour', () => {

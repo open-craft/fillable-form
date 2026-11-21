@@ -61,16 +61,20 @@ function createConfig(overrides: Partial<StudioConfig> = {}): StudioConfig {
   return {
     block_id: 'test-block-id',
     display_name: 'My Form Field',
+    icon: 'edit',
     instructions: '<p>Instructions here</p>',
     form_group_id: 'group-alpha',
     form_group_options: ['group-alpha', 'group-beta'],
     field_label: 'Section Title',
     show_download_button: true,
+    download_button_info: '',
+    color_variant: '',
     pdf_order: 10,
     handler_urls: {
       studio_submit: '/handler/studio_submit',
     },
     locale: 'en',
+    config: { mfe_config_api: '/api/mfe_config/v1?mfe=learning' },
     ...overrides,
   };
 }
@@ -123,10 +127,13 @@ describe('StudioView', () => {
       '/handler/studio_submit',
       {
         display_name: 'My Form Field',
+        icon: 'edit',
         instructions: '<p>Instructions here</p>',
         form_group_id: 'group-alpha',
         field_label: 'Section Title',
         show_download_button: true,
+        download_button_info: '',
+        color_variant: '',
         pdf_order: 10,
       },
     );
@@ -310,6 +317,91 @@ describe('StudioView', () => {
 
     fireEvent.click(checkbox);
     expect(checkbox).not.toBeChecked();
+  });
+
+  test('shows download card text field only when download button is enabled', () => {
+    renderWithIntl(<StudioView initData={createConfig({ show_download_button: false })} runtime={createRuntime()} />);
+
+    expect(screen.queryByLabelText('Download Card Text')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('Show PDF download button on this field'));
+    expect(screen.getByLabelText('Download Card Text')).toBeInTheDocument();
+  });
+
+  test('submits edited download card text', async () => {
+    (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
+
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+
+    fireEvent.change(screen.getByLabelText('Download Card Text'), {
+      target: { value: 'Download all your answers.' },
+    });
+    fireEvent.click(screen.getByText('Save'));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(postJson).toHaveBeenCalledWith(
+      '/handler/studio_submit',
+      expect.objectContaining({ download_button_info: 'Download all your answers.' }),
+    );
+  });
+
+  test('submits the icon chosen in the icon picker', async () => {
+    (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
+
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+
+    fireEvent.click(screen.getByText('Choose icon'));
+    fireEvent.click(screen.getByRole('button', { name: 'lightbulb' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Save'));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(postJson).toHaveBeenCalledWith(
+      '/handler/studio_submit',
+      expect.objectContaining({ icon: 'lightbulb' }),
+    );
+  });
+
+  test('submits the color variant chosen in the selector', async () => {
+    (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
+
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+    fireEvent.click(screen.getByRole('radio', { name: 'Light' }));
+    fireEvent.click(screen.getByText('Save'));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(postJson).toHaveBeenCalledWith(
+      '/handler/studio_submit',
+      expect.objectContaining({ color_variant: 'secondary-light' }),
+    );
+  });
+
+  test('submits the stored color variant unchanged', async () => {
+    (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
+
+    renderWithIntl(
+      <StudioView initData={createConfig({ color_variant: 'primary-navy' })} runtime={createRuntime()} />,
+    );
+    fireEvent.click(screen.getByText('Save'));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(postJson).toHaveBeenCalledWith(
+      '/handler/studio_submit',
+      expect.objectContaining({ color_variant: 'primary-navy' }),
+    );
   });
 
   test('displays runtime error message on API error', async () => {
