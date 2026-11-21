@@ -369,6 +369,71 @@
   color: var(--pgn-color-body-base, #444);
 }
 
+.fillable-form-studio .fillable-form-swatch-grid {
+  gap: var(--pgn-spacing-spacer-3, 16px);
+}
+
+.fillable-form-studio .fillable-form-swatch {
+  width: 9rem;
+  border: 2px solid var(--pgn-color-light-300, #dee2e6);
+  border-radius: 16px;
+  cursor: pointer;
+
+  label {
+    cursor: pointer;
+  }
+
+  .pgn__form-radio-input {
+    position: absolute;
+    width: 1px;
+    min-width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  &.fillable-form-swatch--selected {
+    border-color: var(--pgn-color-primary-500, #002855);
+    box-shadow: 0 0 0 1px var(--pgn-color-primary-500, #002855);
+  }
+
+  &:focus-within {
+    outline: 2px solid var(--pgn-color-primary-500, #002855);
+    outline-offset: 2px;
+  }
+
+  .fillable-form-swatch-body {
+    gap: var(--pgn-spacing-spacer-2, 8px);
+    line-height: 1.2;
+  }
+
+  .fillable-form-swatch-preview,
+  .fillable-form-swatch-tile {
+    gap: var(--pgn-spacing-spacer-2, 8px);
+  }
+
+  .fillable-form-swatch-rule {
+    display: block;
+    height: 3px;
+    border-radius: 9999px;
+    background: currentColor;
+    opacity: 0.9;
+  }
+
+  .fillable-form-swatch-check {
+    top: -10px;
+    right: -10px;
+    padding: 2px;
+  }
+}
+
+.fillable-form-studio .fillable-form-swatch-unavailable {
+  margin: var(--pgn-spacing-spacer-2, 8px) 0 0;
+  font-size: 14px;
+}
+
 @media (max-width: 720px) {
   .fillable-form-learner .fillable-form-container,
   .fillable-form-studio {

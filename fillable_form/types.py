@@ -11,6 +11,7 @@ class LearnerInitData(BaseModel):
     current_text: str
     show_download_button: bool
     download_button_info: str
+    color_variant: str
     # False outside a course (e.g. content-library preview), where responses
     # cannot be saved and PDFs cannot be assembled.
     in_course_context: bool = True
@@ -37,6 +38,7 @@ class StudioInitData(BaseModel):
     field_label: str
     show_download_button: bool
     download_button_info: str
+    color_variant: str
     pdf_order: int = 0
     handler_urls: dict[str, str]
     locale: str
@@ -54,4 +56,6 @@ class StudioSaveData(BaseModel):
     show_download_button: bool
     # Optional so that a Studio payload without it keeps the stored value.
     download_button_info: str | None = None
+    # Optional for the same reason as download_button_info.
+    color_variant: str | None = None
     pdf_order: int = Field(ge=0)

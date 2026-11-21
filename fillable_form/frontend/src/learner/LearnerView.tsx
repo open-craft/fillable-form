@@ -5,6 +5,7 @@ import { postJson } from '../common/api';
 import { LearnerConfig, SaveResponseResult } from '../common/types';
 import { learnerMessages } from '../common/messages';
 import { DownloadButton } from './DownloadButton';
+import { colorVariantStyle } from '../common/variants';
 
 interface LearnerViewProps {
   initData: LearnerConfig;
@@ -22,6 +23,7 @@ export function LearnerView({ initData }: LearnerViewProps) {
     display_name,
     icon,
     download_button_info,
+    color_variant,
   } = initData;
 
   const inCourse = in_course_context !== false;
@@ -125,10 +127,14 @@ export function LearnerView({ initData }: LearnerViewProps) {
     : null;
 
   return (
-    <div className="fillable-form-learner" data-block-id={block_id}>
+    <div
+      className="fillable-form-learner"
+      data-block-id={block_id}
+      style={colorVariantStyle(color_variant)}
+    >
       <div className="fillable-form-container">
         <Stack direction="horizontal" gap={2} className="fillable-form-header mb-3">
-          <span className="material-icons-outlined text-primary fillable-form-header-icon" aria-hidden="true">
+          <span className="material-icons-outlined fillable-form-header-icon" aria-hidden="true">
             {icon || 'edit'}
           </span>
           <div className="fillable-form-header-divider" aria-hidden="true" />

@@ -97,6 +97,14 @@ class FillableFormXBlock(XBlock):
         scope=Scope.settings,
         help=_("When checked, a download button appears on this field"),
     )
+    color_variant = String(
+        default="",
+        scope=Scope.settings,
+        help=_(
+            "Id of the colour variant applied to the block. "
+            "When empty, the block uses its default colours."
+        ),
+    )
     download_button_info = String(
         default="",
         scope=Scope.settings,
@@ -210,6 +218,7 @@ class FillableFormXBlock(XBlock):
             current_text=current_text,
             show_download_button=self.show_download_button,
             download_button_info=self.download_button_info,
+            color_variant=self.color_variant,
             in_course_context=self._course_key() is not None,
             handler_urls={
                 "save_response": self.runtime.handler_url(
@@ -376,6 +385,7 @@ class FillableFormXBlock(XBlock):
             field_label=self.field_label,
             show_download_button=self.show_download_button,
             download_button_info=self.download_button_info,
+            color_variant=self.color_variant,
             pdf_order=self.pdf_order,
             handler_urls={
                 "studio_submit": self.runtime.handler_url(
@@ -414,6 +424,8 @@ class FillableFormXBlock(XBlock):
         self.show_download_button = validated.show_download_button
         if validated.download_button_info is not None:
             self.download_button_info = validated.download_button_info
+        if validated.color_variant is not None:
+            self.color_variant = validated.color_variant
         self.pdf_order = validated.pdf_order
 
         course_key = self._course_key()

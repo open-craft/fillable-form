@@ -24,6 +24,7 @@ function createConfig(overrides: Partial<LearnerConfig> = {}): LearnerConfig {
     current_text: '',
     show_download_button: true,
     download_button_info: '',
+    color_variant: '',
     handler_urls: {
       save_response: '/handler/save_response',
       download_pdf: '/handler/download_pdf',
@@ -47,6 +48,21 @@ describe('LearnerView', () => {
   test('renders field label', () => {
     renderWithIntl(<LearnerView initData={createConfig()} />);
     expect(screen.getByText('Test Question')).toBeInTheDocument();
+  });
+
+  test('applies the colours of the stored color variant', () => {
+    const { container } = renderWithIntl(
+      <LearnerView initData={createConfig({ color_variant: 'secondary-light' })} />,
+    );
+    const root = container.querySelector('.fillable-form-learner') as HTMLElement;
+    expect(root.style.getPropertyValue('--fillable-form-color-background')).toBe('#ecf5f7');
+  });
+
+  test('keeps the default colours for an unknown color variant', () => {
+    const { container } = renderWithIntl(
+      <LearnerView initData={createConfig({ color_variant: 'not-shipped' })} />,
+    );
+    expect(container.querySelector('.fillable-form-learner')).not.toHaveAttribute('style');
   });
 
   test('renders instructions as HTML', () => {

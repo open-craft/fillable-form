@@ -68,6 +68,7 @@ function createConfig(overrides: Partial<StudioConfig> = {}): StudioConfig {
     field_label: 'Section Title',
     show_download_button: true,
     download_button_info: '',
+    color_variant: '',
     pdf_order: 10,
     handler_urls: {
       studio_submit: '/handler/studio_submit',
@@ -132,6 +133,7 @@ describe('StudioView', () => {
         field_label: 'Section Title',
         show_download_button: true,
         download_button_info: '',
+        color_variant: '',
         pdf_order: 10,
       },
     );
@@ -364,6 +366,41 @@ describe('StudioView', () => {
     expect(postJson).toHaveBeenCalledWith(
       '/handler/studio_submit',
       expect.objectContaining({ icon: 'lightbulb' }),
+    );
+  });
+
+  test('submits the color variant chosen in the selector', async () => {
+    (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
+
+    renderWithIntl(<StudioView initData={createConfig()} runtime={createRuntime()} />);
+    fireEvent.click(screen.getByRole('radio', { name: 'Light' }));
+    fireEvent.click(screen.getByText('Save'));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(postJson).toHaveBeenCalledWith(
+      '/handler/studio_submit',
+      expect.objectContaining({ color_variant: 'secondary-light' }),
+    );
+  });
+
+  test('submits the stored color variant unchanged', async () => {
+    (postJson as jest.Mock).mockResolvedValueOnce({ success: true });
+
+    renderWithIntl(
+      <StudioView initData={createConfig({ color_variant: 'primary-navy' })} runtime={createRuntime()} />,
+    );
+    fireEvent.click(screen.getByText('Save'));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(postJson).toHaveBeenCalledWith(
+      '/handler/studio_submit',
+      expect.objectContaining({ color_variant: 'primary-navy' }),
     );
   });
 

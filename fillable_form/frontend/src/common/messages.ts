@@ -72,6 +72,22 @@ export const studioMessages = defineMessages({
     id: 'fillable.form.studio.button.choose.icon',
     defaultMessage: 'Choose icon',
   },
+  labelColorVariant: {
+    id: 'fillable.form.studio.label.color.variant',
+    defaultMessage: 'Color variant',
+  },
+  helpColorVariant: {
+    id: 'fillable.form.studio.help.color.variant',
+    defaultMessage: 'Choose a color variant. These color combinations are set by your site operator.',
+  },
+  defaultColorVariant: {
+    id: 'fillable.form.studio.default.color.variant',
+    defaultMessage: 'Default',
+  },
+  unavailableColorVariant: {
+    id: 'fillable.form.studio.unavailable.color.variant',
+    defaultMessage: 'The saved color variant "{variant}" isn\'t available in this theme, so the default colors are shown. The saved value is kept.',
+  },
   labelInstructions: {
     id: 'fillable.form.studio.label.instructions',
     defaultMessage: 'Introduction',

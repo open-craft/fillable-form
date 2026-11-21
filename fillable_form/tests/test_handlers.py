@@ -43,6 +43,7 @@ def mock_block():
         block.field_label = "Question 1"
         block.show_download_button = True
         block.download_button_info = "Download your answers as a PDF."
+        block.color_variant = ""
         block.pdf_order = 0
 
         return block
@@ -79,6 +80,7 @@ class TestStudentView:
         assert fragment.json_init_args["download_button_info"] == (
             mock_block.download_button_info
         )
+        assert fragment.json_init_args["color_variant"] == ""
 
     def test_student_view_loads_existing_response(self, mock_block):
         """When FormResponse exists, student_view includes current_text."""
@@ -391,6 +393,7 @@ class TestStudioView:
                 "field_label": "Q2",
                 "show_download_button": True,
                 "download_button_info": "Download all your answers.",
+                "color_variant": "primary-navy",
                 "pdf_order": 20,
             })
 
@@ -401,14 +404,16 @@ class TestStudioView:
         assert mock_block.field_label == "Q2"
         assert mock_block.show_download_button is True
         assert mock_block.download_button_info == "Download all your answers."
+        assert mock_block.color_variant == "primary-navy"
         assert mock_block.pdf_order == 20
         mock_upsert.assert_called_once()
 
-    def test_studio_submit_keeps_download_button_info_when_missing(self, mock_block):
-        """A payload without download_button_info keeps the stored value."""
+    def test_studio_submit_keeps_optional_fields_when_missing(self, mock_block):
+        """A payload without download_button_info or color_variant keeps the stored values."""
         mock_user = Mock(id=1, is_staff=True)
         mock_block._get_django_user = Mock(return_value=(mock_user, None))
         mock_block.download_button_info = "Existing text"
+        mock_block.color_variant = "primary-navy"
 
         with patch("fillable_form.fillable_form.save_form_field"):
             result = call_json_handler(mock_block.studio_submit, {
@@ -423,6 +428,7 @@ class TestStudioView:
 
         assert result["success"] is True
         assert mock_block.download_button_info == "Existing text"
+        assert mock_block.color_variant == "primary-navy"
 
     def test_studio_submit_unauthenticated(self, mock_block):
         """Returns an error and saves nothing when the user isn't authenticated.

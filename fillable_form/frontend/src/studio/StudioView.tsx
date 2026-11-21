@@ -7,6 +7,8 @@ import { StudioConfig, HandlerResponse } from '../common/types';
 import { studioMessages } from '../common/messages';
 import { TinyMceEditor } from './TinyMceEditor';
 import { IconSelectorButton } from './IconSelectorButton';
+import { ColorVariantSelector } from './ColorVariantSelector';
+import { COLOR_VARIANTS, findColorVariant } from '../common/variants';
 
 const NOTIFY_SAVE = 'save';
 const NOTIFY_ERROR = 'error';
@@ -24,7 +26,7 @@ const fieldId = (blockId: string, prefix: string) => `${prefix}-${blockId}`;
 export function StudioView({ initData, runtime }: StudioViewProps) {
   const { block_id, display_name, icon, instructions, form_group_id,
           form_group_options, field_label, show_download_button,
-          download_button_info, pdf_order, handler_urls } = initData;
+          download_button_info, color_variant, pdf_order, handler_urls } = initData;
 
   const intl = useIntl();
   const [displayName, setDisplayName] = useState(display_name);
@@ -34,6 +36,7 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
   const [fieldLabel, setFieldLabel] = useState(field_label);
   const [showDownloadButton, setShowDownloadButton] = useState(show_download_button);
   const [downloadButtonInfo, setDownloadButtonInfo] = useState(download_button_info);
+  const [colorVariant, setColorVariant] = useState(color_variant);
   const [pdfOrder, setPdfOrder] = useState<string>(String(pdf_order));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +87,7 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
           field_label: fieldLabel,
           show_download_button: showDownloadButton,
           download_button_info: downloadButtonInfo,
+          color_variant: colorVariant,
           pdf_order: parsedPdfOrder,
         },
       );
@@ -135,6 +139,30 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
             buttonLabel={intl.formatMessage(studioMessages.buttonChooseIcon)}
           />
         </Form.Group>
+
+        {COLOR_VARIANTS.length > 0 && (
+          <Form.Group>
+            <Form.Label>
+              {intl.formatMessage(studioMessages.labelColorVariant)}
+            </Form.Label>
+            <Form.Control.Feedback>
+              {intl.formatMessage(studioMessages.helpColorVariant)}
+            </Form.Control.Feedback>
+            <ColorVariantSelector
+              name={fieldId(block_id, 'color-variant')}
+              variants={COLOR_VARIANTS}
+              value={colorVariant}
+              onChange={setColorVariant}
+              ariaLabel={intl.formatMessage(studioMessages.labelColorVariant)}
+              defaultLabel={intl.formatMessage(studioMessages.defaultColorVariant)}
+            />
+            {colorVariant && !findColorVariant(colorVariant) && (
+              <p className="fillable-form-swatch-unavailable" role="status">
+                {intl.formatMessage(studioMessages.unavailableColorVariant, { variant: colorVariant })}
+              </p>
+            )}
+          </Form.Group>
+        )}
 
         <Form.Group>
           <Form.Label htmlFor={fieldId(block_id, 'instructions')}>

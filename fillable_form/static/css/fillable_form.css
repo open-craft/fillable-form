@@ -16,9 +16,29 @@
   font-feature-settings: 'liga';
 }
 
+/*
+ * Learner colours. Each one is a block variable on .fillable-form-learner, so a
+ * colour variant can override it inline on that element. The theme can change
+ * the defaults through the --pgn-fillable-form-* variables:
+ *   --fillable-form-color-background     block background
+ *   --fillable-form-color-heading        header icon, divider and title
+ *   --fillable-form-color-text           instructions, field label and save status
+ *   --fillable-form-color-download-bg    download card background
+ *   --fillable-form-color-download-text  download card text, icons and button
+ * The response textarea always stays white so the learner's text is readable on
+ * any variant.
+ */
+
 .fillable-form-learner {
+  --fillable-form-color-background: var(--pgn-fillable-form-color-background, transparent);
+  --fillable-form-color-heading: var(--pgn-fillable-form-color-heading, var(--pgn-color-primary-base, #0075b4));
+  --fillable-form-color-text: var(--pgn-fillable-form-color-text, var(--pgn-color-body-base, #1f2933));
+  --fillable-form-color-download-bg: var(--pgn-fillable-form-color-download-bg, var(--pgn-color-primary-base, #0075b4));
+  --fillable-form-color-download-text: var(--pgn-fillable-form-color-download-text, var(--pgn-color-white, #fff));
+
+  background-color: var(--fillable-form-color-background);
   box-sizing: border-box;
-  color: var(--pgn-color-body-base, #1f2933);
+  color: var(--fillable-form-color-text);
   font-size: 16px;
   line-height: 24px;
   width: 100%;
@@ -31,6 +51,8 @@
   }
 
   .fillable-form-header {
+    color: var(--fillable-form-color-heading);
+
     .fillable-form-header-icon {
       font-size: 3rem;
     }
@@ -39,17 +61,31 @@
       align-self: stretch;
       flex-shrink: 0;
       width: 2px;
-      background-color: black;
+      background-color: currentColor;
     }
 
     .fillable-form-header-title {
+      color: inherit;
       line-height: 1.5rem;
+    }
+  }
+
+  .fillable-form-download-card {
+    background-color: var(--fillable-form-color-download-bg);
+    border: 0;
+    color: var(--fillable-form-color-download-text);
+
+    .btn,
+    .btn:hover,
+    .btn:focus,
+    .btn:active {
+      color: inherit;
     }
   }
 }
 
 .fillable-form-instructions {
-  color: var(--pgn-color-body-base, #2f2f2f);
+  color: inherit;
   font-size: 16px;
   line-height: 24px;
   margin: 0 0;
@@ -58,7 +94,7 @@
 .fillable-form-instructions h1,
 .fillable-form-instructions h2,
 .fillable-form-instructions h3 {
-  color: var(--pgn-color-gray-700, #444);
+  color: inherit;
   font-size: 24px;
   font-weight: 700;
   line-height: 30px;
@@ -74,7 +110,7 @@
 }
 
 .fillable-form-field-label {
-  color: var(--pgn-color-body-base, #333);
+  color: inherit;
   font-size: 18px;
   font-weight: 700;
   line-height: 24px;
@@ -103,7 +139,7 @@
 }
 
 .fillable-form-meta {
-  color: var(--pgn-color-text-muted, #666);
+  color: inherit;
   font-size: 14px;
   line-height: 20px;
   margin-top: 16px;
@@ -113,58 +149,6 @@
 .fillable-form-status-error {
   color: var(--pgn-color-danger-base, var(--pgn-color-danger, #dc3545));
 }
-
-.fillable-form-download-panel {
-  border: 1px solid var(--pgn-color-border, #b9b9b9);
-  border-radius: var(--pgn-size-border-radius-base, var(--pgn-border-radius-base, 3px));
-  margin-top: 44px;
-  padding: 34px 84px 35px;
-  background-color: #FBFBFB;
-}
-
-.fillable-form-download-panel h3 {
-  color: var(--pgn-color-gray-700, #444);
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 28px;
-  margin: 0 0 10px;
-}
-
-.fillable-form-download-panel p {
-  color: var(--pgn-color-body-base, #001b3a);
-  font-size: 14px;
-  line-height: 20px;
-  margin: 0 0 22px;
-}
-
-.fillable-form-download-btn {
-  align-items: center;
-  background: var(--pgn-color-primary-base, var(--pgn-color-primary, #0075b4));
-  border-color: var(--pgn-color-primary-base, var(--pgn-color-primary, #0075b4));
-  border-radius: var(--pgn-size-btn-border-radius-base, var(--pgn-size-border-radius-base, 4px));
-  color: var(--pgn-color-white, #fff);
-  display: inline-flex;
-  font-size: 14px;
-  gap: 8px;
-  line-height: 20px;
-  min-height: 36px;
-  padding: 8px 16px;
-  text-decoration: none;
-}
-
-.fillable-form-download-btn:hover,
-.fillable-form-download-btn:focus,
-.fillable-form-download-btn:active {
-  color: var(--pgn-color-white, #fff);
-  text-decoration: none;
-}
-
-.fillable-form-download-btn.disabled,
-.fillable-form-download-btn:disabled {
-  opacity: 0.65;
-  pointer-events: none;
-}
-
 
 .fillable-form-studio {
   color: var(--pgn-color-body-base, #444);
@@ -385,15 +369,76 @@
   color: var(--pgn-color-body-base, #444);
 }
 
+.fillable-form-studio .fillable-form-swatch-grid {
+  gap: var(--pgn-spacing-spacer-3, 16px);
+}
+
+.fillable-form-studio .fillable-form-swatch {
+  width: 9rem;
+  border: 2px solid var(--pgn-color-light-300, #dee2e6);
+  border-radius: 16px;
+  cursor: pointer;
+
+  label {
+    cursor: pointer;
+  }
+
+  .pgn__form-radio-input {
+    position: absolute;
+    width: 1px;
+    min-width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  &.fillable-form-swatch--selected {
+    border-color: var(--pgn-color-primary-500, #002855);
+    box-shadow: 0 0 0 1px var(--pgn-color-primary-500, #002855);
+  }
+
+  &:focus-within {
+    outline: 2px solid var(--pgn-color-primary-500, #002855);
+    outline-offset: 2px;
+  }
+
+  .fillable-form-swatch-body {
+    gap: var(--pgn-spacing-spacer-2, 8px);
+    line-height: 1.2;
+  }
+
+  .fillable-form-swatch-preview,
+  .fillable-form-swatch-tile {
+    gap: var(--pgn-spacing-spacer-2, 8px);
+  }
+
+  .fillable-form-swatch-rule {
+    display: block;
+    height: 3px;
+    border-radius: 9999px;
+    background: currentColor;
+    opacity: 0.9;
+  }
+
+  .fillable-form-swatch-check {
+    top: -10px;
+    right: -10px;
+    padding: 2px;
+  }
+}
+
+.fillable-form-studio .fillable-form-swatch-unavailable {
+  margin: var(--pgn-spacing-spacer-2, 8px) 0 0;
+  font-size: 14px;
+}
+
 @media (max-width: 720px) {
   .fillable-form-learner .fillable-form-container,
   .fillable-form-studio {
     padding-left: var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 1rem));
     padding-right: var(--pgn-spacing-spacer-3, var(--pgn-spacing-3, 1rem));
-  }
-
-  .fillable-form-download-panel {
-    padding: var(--pgn-spacing-spacer-4, 1.4rem);
   }
 
   .fillable-form-studio .form-control,
