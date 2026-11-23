@@ -98,11 +98,11 @@ class FillableFormXBlock(XBlock):
         help=_("When checked, a download button appears on this field"),
     )
     color_variant = String(
-        default="",
+        default="default",
         scope=Scope.settings,
         help=_(
             "Id of the colour variant applied to the block. "
-            "When empty, the block uses its default colours."
+            '"default" uses the block\'s default colours.'
         ),
     )
     download_button_info = String(

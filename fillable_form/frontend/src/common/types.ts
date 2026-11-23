@@ -10,7 +10,7 @@ export interface LearnerConfig {
   current_text: string;
   show_download_button: boolean;
   download_button_info: string;
-  color_variant: string;        // Id from COLOR_VARIANTS; empty for the default colours
+  color_variant: string;        // Id from COLOR_VARIANTS, or 'default'
   in_course_context?: boolean;
   handler_urls: {
     save_response: string;
@@ -31,7 +31,7 @@ export interface StudioConfig {
   field_label: string;
   show_download_button: boolean;
   download_button_info: string;
-  color_variant: string;        // Id from COLOR_VARIANTS; empty for the default colours
+  color_variant: string;        // Id from COLOR_VARIANTS, or 'default'
   pdf_order: number;
   handler_urls: {
     studio_submit: string;

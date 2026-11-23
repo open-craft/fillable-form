@@ -21,7 +21,7 @@ describe('ColorVariantSelector', () => {
       <ColorVariantSelector
         name="color-variant"
         variants={VARIANTS}
-        value=""
+        value="default"
         onChange={jest.fn()}
         ariaLabel="Color variant"
         defaultLabel="Default"
@@ -30,7 +30,7 @@ describe('ColorVariantSelector', () => {
 
     expect(screen.getByRole('radiogroup', { name: 'Color variant' })).toBeInTheDocument();
     expect(screen.getAllByRole('radio').map((radio) => radio.getAttribute('value'))).toEqual([
-      '',
+      'default',
       'light-lake',
       'primary-navy',
     ]);
@@ -60,7 +60,7 @@ describe('ColorVariantSelector', () => {
       <ColorVariantSelector
         name="color-variant"
         variants={VARIANTS}
-        value=""
+        value="default"
         onChange={onChange}
         ariaLabel="Color variant"
         defaultLabel="Default"
@@ -85,6 +85,21 @@ describe('ColorVariantSelector', () => {
     );
 
     fireEvent.click(screen.getByRole('radio', { name: 'Default' }));
-    expect(onChange).toHaveBeenCalledWith('');
+    expect(onChange).toHaveBeenCalledWith('default');
+  });
+
+  test('treats an empty id as the default swatch', () => {
+    render(
+      <ColorVariantSelector
+        name="color-variant"
+        variants={VARIANTS}
+        value=""
+        onChange={jest.fn()}
+        ariaLabel="Color variant"
+        defaultLabel="Default"
+      />,
+    );
+
+    expect(screen.getByRole('radio', { name: 'Default' })).toBeChecked();
   });
 });

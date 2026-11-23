@@ -57,8 +57,8 @@ class TestXBlockDefaults:
         assert block.download_button_info == ""
 
     def test_color_variant_default(self, block):
-        """color_variant defaults to empty string (the block's default colours)."""
-        assert block.color_variant == ""
+        """color_variant defaults to "default" (the block's default colours)."""
+        assert block.color_variant == "default"
 
     def test_pdf_order_default(self, block):
         """pdf_order defaults to 0."""

@@ -33,6 +33,12 @@ export interface ColorVariant {
   tokens: Record<ColorToken, string>;
 }
 
+/** Stored id of the "Default" option: the block's own colours, no variant. Reserved. */
+export const DEFAULT_COLOR_VARIANT = 'default';
+
+/** Whether an id means the block's default colours ('' covers blocks saved before 'default'). */
+export const isDefaultColorVariant = (id: string) => id === DEFAULT_COLOR_VARIANT || id === '';
+
 export const COLOR_VARIANTS: ColorVariant[] = [
   {
     id: 'secondary-light',

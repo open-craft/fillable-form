@@ -8,7 +8,7 @@ import { studioMessages } from '../common/messages';
 import { TinyMceEditor } from './TinyMceEditor';
 import { IconSelectorButton } from './IconSelectorButton';
 import { ColorVariantSelector } from './ColorVariantSelector';
-import { COLOR_VARIANTS, findColorVariant } from '../common/variants';
+import { COLOR_VARIANTS, findColorVariant, isDefaultColorVariant } from '../common/variants';
 
 const NOTIFY_SAVE = 'save';
 const NOTIFY_ERROR = 'error';
@@ -156,7 +156,7 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
               ariaLabel={intl.formatMessage(studioMessages.labelColorVariant)}
               defaultLabel={intl.formatMessage(studioMessages.defaultColorVariant)}
             />
-            {colorVariant && !findColorVariant(colorVariant) && (
+            {!isDefaultColorVariant(colorVariant) && !findColorVariant(colorVariant) && (
               <p className="fillable-form-swatch-unavailable" role="status">
                 {intl.formatMessage(studioMessages.unavailableColorVariant, { variant: colorVariant })}
               </p>

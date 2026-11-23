@@ -43,7 +43,7 @@ def mock_block():
         block.field_label = "Question 1"
         block.show_download_button = True
         block.download_button_info = "Download your answers as a PDF."
-        block.color_variant = ""
+        block.color_variant = "default"
         block.pdf_order = 0
 
         return block
@@ -79,7 +79,7 @@ class TestStudentView:
         assert fragment.json_init_args["download_button_info"] == (
             mock_block.download_button_info
         )
-        assert fragment.json_init_args["color_variant"] == ""
+        assert fragment.json_init_args["color_variant"] == "default"
 
     def test_student_view_loads_existing_response(self, mock_block):
         """When FormResponse exists, student_view includes current_text."""

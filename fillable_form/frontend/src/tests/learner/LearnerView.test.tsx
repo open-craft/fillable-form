@@ -24,7 +24,7 @@ function createConfig(overrides: Partial<LearnerConfig> = {}): LearnerConfig {
     current_text: '',
     show_download_button: true,
     download_button_info: '',
-    color_variant: '',
+    color_variant: 'default',
     handler_urls: {
       save_response: '/handler/save_response',
       download_pdf: '/handler/download_pdf',

@@ -1,7 +1,9 @@
 import { Form, Icon } from '@openedx/paragon';
 import { CheckCircle } from '@openedx/paragon/icons';
 import {
+  DEFAULT_COLOR_VARIANT,
   DEFAULT_SWATCH_TILES,
+  isDefaultColorVariant,
   swatchTiles,
   type ColorVariant,
   type SwatchTile,
@@ -66,16 +68,16 @@ export function ColorVariantSelector({
   return (
     <Form.RadioSet
       name={name}
-      value={value}
+      value={isDefaultColorVariant(value) ? DEFAULT_COLOR_VARIANT : value}
       aria-label={ariaLabel}
       className="fillable-form-swatch-grid d-flex flex-row flex-wrap align-items-stretch mt-3"
       onChange={(event: React.ChangeEvent<HTMLInputElement>) => onChange(event.target.value)}
     >
       <ColorSwatch
-        value=""
+        value={DEFAULT_COLOR_VARIANT}
         label={defaultLabel}
         tiles={DEFAULT_SWATCH_TILES}
-        selected={value === ''}
+        selected={isDefaultColorVariant(value)}
       />
       {variants.map((variant) => (
         <ColorSwatch

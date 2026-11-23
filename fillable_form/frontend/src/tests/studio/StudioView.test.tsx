@@ -68,7 +68,7 @@ function createConfig(overrides: Partial<StudioConfig> = {}): StudioConfig {
     field_label: 'Section Title',
     show_download_button: true,
     download_button_info: '',
-    color_variant: '',
+    color_variant: 'default',
     pdf_order: 10,
     handler_urls: {
       studio_submit: '/handler/studio_submit',
@@ -133,7 +133,7 @@ describe('StudioView', () => {
         field_label: 'Section Title',
         show_download_button: true,
         download_button_info: '',
-        color_variant: '',
+        color_variant: 'default',
         pdf_order: 10,
       },
     );
