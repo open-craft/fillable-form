@@ -174,10 +174,9 @@ class FillableFormXBlock(XBlock):
         js_initializer: str,
         init_data: BaseModel,
         div_class: str = "",
-        css_path: str | None = None,
-        include_css: bool = True,
     ) -> Fragment:
-        """Build a Fragment with the standard CSS/JS loading pattern."""
+        """Build a Fragment that mounts a React bundle.
+        """
         fragment = Fragment()
         # Font for the Material Icons; its CSS class is redefined in our
         # stylesheet because the page CSS does not reach the shadow DOM.
@@ -186,15 +185,6 @@ class FillableFormXBlock(XBlock):
         fragment.add_content(
             f'<div id="{div_prefix}-{self.scope_ids.usage_id}"{class_attr}></div>'
         )
-
-        if include_css:
-            resolved_css_path = css_path or (
-                "static/css/fillable_form_studio.css" if self._is_legacy_studio()
-                else "static/css/fillable_form.css"
-            )
-            fragment.add_css_url(
-                self.runtime.local_resource_url(self, resolved_css_path)
-            )
         fragment.add_javascript_url(
             self.runtime.local_resource_url(self, js_bundle)
         )
@@ -232,14 +222,11 @@ class FillableFormXBlock(XBlock):
             config=self._xblock_react_config(),
         )
 
-        # The learner bundle mounts inside a shadow DOM and injects its own
-        # CSS (plus Paragon's), so no external stylesheet is needed.
         return self._render_fragment(
             "fillable-form-learner",
             "static/js/fillable_form_learner.js",
             "FillableFormLearner",
             init_data,
-            include_css=False,
         )
 
     @XBlock.json_handler
@@ -396,15 +383,12 @@ class FillableFormXBlock(XBlock):
             config=self._xblock_react_config(),
         )
 
-        # Like the learner view, the Studio bundle mounts inside a shadow DOM
-        # and injects its own CSS (plus Paragon's).
         return self._render_fragment(
             "fillable-form-studio",
             "static/js/fillable_form_studio.js",
             "FillableFormStudio",
             init_data,
             div_class="editor-with-buttons",
-            include_css=False,
         )
 
     @XBlock.json_handler
@@ -467,8 +451,3 @@ class FillableFormXBlock(XBlock):
 
     # Alias needed for client's "Data Bricks" indexer project.
     student_view_data = index_dictionary
-
-    @staticmethod
-    def _is_legacy_studio() -> bool:
-        """Detect whether we're rendering inside legacy Studio (not MFE)."""
-        return not getattr(settings, "ENABLE_STUDIO_MFE", False)

@@ -56,7 +56,6 @@ class TestStudentView:
         """student_view() returns fragment with expected div and init data."""
         # Mock user services
         mock_block._get_django_user = Mock(return_value=(None, None))
-        mock_block._is_legacy_studio = Mock(return_value=True)
         mock_block.runtime.handler_url = Mock(return_value="/handler/url")
         mock_block.runtime.local_resource_url = Mock(return_value="/static/url")
 
@@ -86,7 +85,6 @@ class TestStudentView:
         """When FormResponse exists, student_view includes current_text."""
         mock_user = Mock(id=1)
         mock_block._get_django_user = Mock(return_value=(mock_user, None))
-        mock_block._is_legacy_studio = Mock(return_value=False)
         mock_block.runtime.handler_url = Mock(return_value="/handler/url")
         mock_block.runtime.local_resource_url = Mock(return_value="/static/url")
 
@@ -102,7 +100,6 @@ class TestStudentView:
         """When no FormResponse, student_view includes empty current_text."""
         mock_user = Mock(id=1)
         mock_block._get_django_user = Mock(return_value=(mock_user, None))
-        mock_block._is_legacy_studio = Mock(return_value=False)
         mock_block.runtime.handler_url = Mock(return_value="/handler/url")
         mock_block.runtime.local_resource_url = Mock(return_value="/static/url")
 
@@ -114,7 +111,6 @@ class TestStudentView:
     def test_student_view_flags_course_context(self, mock_block):
         """In a course, init data reports in_course_context=True."""
         mock_block._get_django_user = Mock(return_value=(None, None))
-        mock_block._is_legacy_studio = Mock(return_value=False)
         mock_block.runtime.handler_url = Mock(return_value="/handler/url")
         mock_block.runtime.local_resource_url = Mock(return_value="/static/url")
 
@@ -130,7 +126,6 @@ class TestStudentView:
             "lb:TestX:testlib:fillable_form:testfield"
         ))
         mock_block._get_django_user = Mock(return_value=(None, None))
-        mock_block._is_legacy_studio = Mock(return_value=False)
         mock_block.runtime.handler_url = Mock(return_value="/handler/url")
         mock_block.runtime.local_resource_url = Mock(return_value="/static/url")
 
@@ -370,7 +365,6 @@ class TestStudioView:
         """studio_view() passes form_group_options in init data."""
         mock_user = Mock(id=1, is_staff=True)
         mock_block._get_django_user = Mock(return_value=(mock_user, None))
-        mock_block._is_legacy_studio = Mock(return_value=False)
         mock_block.runtime.handler_url = Mock(return_value="/handler/url")
         mock_block.runtime.local_resource_url = Mock(return_value="/static/url")
 

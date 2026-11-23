@@ -127,13 +127,15 @@ To run one suite, use `make test-python` (pytest) or `make test-frontend` (Jest)
 The Python tests use a minimal Django setup (`test_settings.py`, SQLite in
 memory), so they don't need an Open edX installation.
 
-CSS is authored once in `src/fillable_form.css` and compiled by Webpack into
-four outputs:
-- `static/css/fillable_form.css` — non-prefixed (LMS iframes + MFE Studio)
-- `static/css/fillable_form_studio.css` — `.fillable-form-block` prefixed
-  (legacy Studio)
+Webpack compiles the frontend into two bundles:
 - `static/js/fillable_form_learner.js` — learner React bundle
 - `static/js/fillable_form_studio.js` — studio React bundle
+
+Both mount inside a shadow DOM with `createXBlockRoot`, which injects
+`src/fillable_form.css` (bundled as a string) together with the Paragon and
+brand theme stylesheets. There are no standalone CSS files.
+
+The block requires Open edX Ulmo or later (no legacy Studio support).
 
 ## License
 

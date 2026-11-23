@@ -43,7 +43,6 @@ exclude = ["*tests*"]
 
 [tool.setuptools.package-data]
 "fillable_form" = [
-    "static/css/*.css",
     "static/js/*.js",
     "static/pdf/templates/*.html",
     "static/pdf/*.css",

@@ -133,18 +133,6 @@ class TestIndexDictionary:
 class TestHelpers:
     """Tests for helper methods."""
 
-    def test_is_legacy_studio_true(self, block):
-        """_is_legacy_studio returns True when MFE is disabled."""
-        with patch("fillable_form.fillable_form.settings") as mock_settings:
-            mock_settings.ENABLE_STUDIO_MFE = False
-            assert block._is_legacy_studio() is True
-
-    def test_is_legacy_studio_false(self, block):
-        """_is_legacy_studio returns False when MFE is enabled."""
-        with patch("fillable_form.fillable_form.settings") as mock_settings:
-            mock_settings.ENABLE_STUDIO_MFE = True
-            assert block._is_legacy_studio() is False
-
     def test_get_django_user_no_xblock_user(self, block):
         """Returns None when no XBlock user service available."""
         mock_user_service = Mock()
