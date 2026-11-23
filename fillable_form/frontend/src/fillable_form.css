@@ -71,8 +71,10 @@
   }
 
   .fillable-form-download-card {
-    background-color: var(--fillable-form-color-download-bg);
-    border: 0;
+    --pgn-alert-bg: var(--fillable-form-color-download-bg);
+    --pgn-alert-border-color: transparent;
+    --pgn-alert-icon-color: var(--fillable-form-color-download-text);
+
     color: var(--fillable-form-color-download-text);
 
     .btn,

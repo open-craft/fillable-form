@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { Stack } from '@openedx/paragon';
+import { Alert, Button, Stack } from '@openedx/paragon';
+import { Download, InfoOutline } from '@openedx/paragon/icons';
 import { postJson } from '../common/api';
 import { LearnerConfig, SaveResponseResult } from '../common/types';
 import { learnerMessages } from '../common/messages';
-import { DownloadButton } from './DownloadButton';
 import { colorVariantStyle } from '../common/variants';
 
 interface LearnerViewProps {
@@ -172,10 +172,23 @@ export function LearnerView({ initData }: LearnerViewProps) {
         </div>
 
         {show_download_button && downloadUrl && (
-          <DownloadButton
-            downloadUrl={downloadUrl}
-            downloadButtonInfo={download_button_info}
-          />
+          <Alert
+            icon={InfoOutline}
+            className="fillable-form-download-card rounded-lg mb-0"
+            actions={[
+              <Button
+                as="a"
+                href={downloadUrl}
+                target="_blank"
+                variant="inverse-tertiary"
+                iconAfter={Download}
+              >
+                {intl.formatMessage(learnerMessages.downloadButton)}
+              </Button>,
+            ]}
+          >
+            {download_button_info || intl.formatMessage(learnerMessages.downloadButtonInfoDefault)}
+          </Alert>
         )}
       </div>
     </div>

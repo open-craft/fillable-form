@@ -16,18 +16,10 @@ jest.mock('@openedx/paragon', () => ({
     const React = require('react');
     return React.createElement('div', props, children);
   },
-  ActionRow: ({ children }: any) => {
+  Alert: ({ children, icon, actions, ...props }: any) => {
     const React = require('react');
-    return React.createElement('div', {}, children);
+    return React.createElement('div', { role: 'alert', ...props }, children, actions);
   },
-  Card: (() => {
-    const React = require('react');
-    const Card = ({ children, orientation, ...props }: any) =>
-      React.createElement('div', props, children);
-    Card.Section = ({ children }: any) => React.createElement('div', {}, children);
-    Card.Footer = ({ children }: any) => React.createElement('div', {}, children);
-    return Card;
-  })(),
   Button: ({ children, iconBefore, iconAfter, ...props }: any) => {
     const React = require('react');
     return React.createElement('button', { type: 'button', ...props }, children);
