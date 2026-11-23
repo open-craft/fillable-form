@@ -138,7 +138,7 @@ export const studioMessages = defineMessages({
   },
   helpDownloadButtonInfo: {
     id: 'fillable.form.studio.help.download.button.info',
-    defaultMessage: 'Text shown next to the PDF download button. Leave empty to use the default text.',
+    defaultMessage: 'Text shown next to the PDF download button. Leave empty to use the default text shown in the field.',
   },
   buttonSave: {
     id: 'fillable.form.studio.button.save',

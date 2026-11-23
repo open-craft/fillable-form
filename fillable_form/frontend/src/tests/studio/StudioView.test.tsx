@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { StudioView } from '../../studio/StudioView';
-import { studioMessages } from '../../common/messages';
+import { learnerMessages, studioMessages } from '../../common/messages';
 import type { StudioConfig } from '../../common/types';
 
 // Mock the API module
@@ -326,6 +326,15 @@ describe('StudioView', () => {
 
     fireEvent.click(screen.getByLabelText('Show PDF download button on this field'));
     expect(screen.getByLabelText('Download Card Text')).toBeInTheDocument();
+  });
+
+  test('shows the default download card text as placeholder', () => {
+    renderWithIntl(<StudioView initData={createConfig({ show_download_button: true })} runtime={createRuntime()} />);
+
+    expect(screen.getByLabelText('Download Card Text')).toHaveAttribute(
+      'placeholder',
+      learnerMessages.downloadButtonInfoDefault.defaultMessage,
+    );
   });
 
   test('submits edited download card text', async () => {
