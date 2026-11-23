@@ -4,7 +4,7 @@ import Creatable from 'react-select/creatable';
 import { Button, Form, StatefulButton } from '@openedx/paragon';
 import { postJson } from '../common/api';
 import { StudioConfig, HandlerResponse } from '../common/types';
-import { learnerMessages, studioMessages } from '../common/messages';
+import { studioMessages } from '../common/messages';
 import { TinyMceEditor } from './TinyMceEditor';
 import { IconSelectorButton } from './IconSelectorButton';
 import { ColorVariantSelector } from './ColorVariantSelector';
@@ -259,7 +259,6 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
               id={fieldId(block_id, 'download-button-info')}
               type="text"
               value={downloadButtonInfo}
-              placeholder={intl.formatMessage(learnerMessages.downloadButtonInfoDefault)}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setDownloadButtonInfo(e.target.value)
               }

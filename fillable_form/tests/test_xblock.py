@@ -53,8 +53,11 @@ class TestXBlockDefaults:
         assert block.show_download_button is False
 
     def test_download_button_info_default(self, block):
-        """download_button_info defaults to empty string (the frontend provides the text)."""
-        assert block.download_button_info == ""
+        """download_button_info defaults to the download card text, editable in Studio."""
+        assert block.download_button_info == (
+            "Save your journal entries from this course as a single PDF "
+            "and see how your perspective changed."
+        )
 
     def test_color_variant_default(self, block):
         """color_variant defaults to "default" (the block's default colours)."""

@@ -106,12 +106,12 @@ class FillableFormXBlock(XBlock):
         ),
     )
     download_button_info = String(
-        default="",
-        scope=Scope.settings,
-        help=_(
-            "Text shown in the download card next to the download button. "
-            "When empty, the frontend shows its default text."
+        default=_(
+            "Save your journal entries from this course as a single PDF "
+            "and see how your perspective changed."
         ),
+        scope=Scope.settings,
+        help=_("Text shown in the download card next to the download button"),
     )
     pdf_order = Integer(
         default=0,

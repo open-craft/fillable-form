@@ -33,10 +33,6 @@ export const learnerMessages = defineMessages({
     id: 'fillable.form.learner.preview.notice',
     defaultMessage: 'Preview only — responses are saved when this block is used inside a course.',
   },
-  downloadButtonInfoDefault: {
-    id: 'fillable.form.learner.download.info.default',
-    defaultMessage: 'Save your journal entries from this course as a single PDF and see how your perspective changed.',
-  },
 });
 
 export const studioMessages = defineMessages({
@@ -138,7 +134,7 @@ export const studioMessages = defineMessages({
   },
   helpDownloadButtonInfo: {
     id: 'fillable.form.studio.help.download.button.info',
-    defaultMessage: 'Text shown next to the PDF download button. Leave empty to use the default text shown in the field.',
+    defaultMessage: 'Text shown next to the PDF download button.',
   },
   buttonSave: {
     id: 'fillable.form.studio.button.save',

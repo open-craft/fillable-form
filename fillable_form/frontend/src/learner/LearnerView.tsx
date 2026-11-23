@@ -187,7 +187,7 @@ export function LearnerView({ initData }: LearnerViewProps) {
               </Button>,
             ]}
           >
-            {download_button_info || intl.formatMessage(learnerMessages.downloadButtonInfoDefault)}
+            {download_button_info}
           </Alert>
         )}
       </div>
