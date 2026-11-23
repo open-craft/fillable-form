@@ -402,28 +402,6 @@ class TestStudioView:
         assert mock_block.pdf_order == 20
         mock_upsert.assert_called_once()
 
-    def test_studio_submit_keeps_optional_fields_when_missing(self, mock_block):
-        """A payload without download_button_info or color_variant keeps the stored values."""
-        mock_user = Mock(id=1, is_staff=True)
-        mock_block._get_django_user = Mock(return_value=(mock_user, None))
-        mock_block.download_button_info = "Existing text"
-        mock_block.color_variant = "primary-navy"
-
-        with patch("fillable_form.fillable_form.save_form_field"):
-            result = call_json_handler(mock_block.studio_submit, {
-                "display_name": "X",
-                "icon": "edit",
-                "instructions": "X",
-                "form_group_id": "X",
-                "field_label": "X",
-                "show_download_button": True,
-                "pdf_order": 0,
-            })
-
-        assert result["success"] is True
-        assert mock_block.download_button_info == "Existing text"
-        assert mock_block.color_variant == "primary-navy"
-
     def test_studio_submit_unauthenticated(self, mock_block):
         """Returns an error and saves nothing when the user isn't authenticated.
 
@@ -440,6 +418,8 @@ class TestStudioView:
                 "form_group_id": "X",
                 "field_label": "X",
                 "show_download_button": False,
+                "download_button_info": "",
+                "color_variant": "default",
                 "pdf_order": 0,
             })
 
@@ -470,6 +450,8 @@ class TestStudioView:
                 "form_group_id": "X",
                 "field_label": "X",
                 "show_download_button": False,
+                "download_button_info": "",
+                "color_variant": "default",
                 "pdf_order": 0,
             })
 

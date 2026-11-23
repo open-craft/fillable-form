@@ -406,10 +406,8 @@ class FillableFormXBlock(XBlock):
         self.form_group_id = validated.form_group_id
         self.field_label = validated.field_label
         self.show_download_button = validated.show_download_button
-        if validated.download_button_info is not None:
-            self.download_button_info = validated.download_button_info
-        if validated.color_variant is not None:
-            self.color_variant = validated.color_variant
+        self.download_button_info = validated.download_button_info
+        self.color_variant = validated.color_variant
         self.pdf_order = validated.pdf_order
 
         course_key = self._course_key()

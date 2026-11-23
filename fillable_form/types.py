@@ -54,8 +54,6 @@ class StudioSaveData(BaseModel):
     form_group_id: str
     field_label: str
     show_download_button: bool
-    # Optional so that a Studio payload without it keeps the stored value.
-    download_button_info: str | None = None
-    # Optional for the same reason as download_button_info.
-    color_variant: str | None = None
+    download_button_info: str
+    color_variant: str
     pdf_order: int = Field(ge=0)

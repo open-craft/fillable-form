@@ -218,6 +218,8 @@ class TestLibraryContext:
             "form_group_id": "",
             "field_label": "Answer",
             "show_download_button": False,
+            "download_button_info": "",
+            "color_variant": "default",
             "pdf_order": 0,
         }
         with patch.object(library_block, "_get_django_user", return_value=(Mock(id=1), None)):
