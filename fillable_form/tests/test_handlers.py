@@ -231,6 +231,7 @@ class TestDownloadPdfHandler:
         mock_xblock_user = Mock(emails=[], full_name="Test User")
         mock_xblock_user.opt_attrs = {"edx-platform.username": "testuser"}
         mock_block._get_django_user = Mock(return_value=(mock_django_user, mock_xblock_user))
+        mock_block._get_unit_names = Mock(return_value={"block1": "Unit 1"})
 
         fields = [
             Mock(field_label="Q1", instructions="", usage_key="block1"),
@@ -239,10 +240,9 @@ class TestDownloadPdfHandler:
 
         with patch("fillable_form.fillable_form.get_registered_form_fields", return_value=fields):
             with patch("fillable_form.fillable_form.get_form_group_responses", return_value={}):
-                with patch.object(mock_block, "_get_unit_names", return_value={"block1": "Unit 1"}):
-                    with patch("fillable_form.fillable_form.generate_pdf") as mock_pdf:
-                        mock_pdf.return_value = b"%PDF-1.4 fake pdf"
-                        mock_block.download_pdf(Mock())
+                with patch("fillable_form.fillable_form.generate_pdf") as mock_pdf:
+                    mock_pdf.return_value = b"%PDF-1.4 fake pdf"
+                    mock_block.download_pdf(Mock())
 
         form_data = mock_pdf.call_args.args[1]
         assert form_data.fields[0].unit_name == "Unit 1"
