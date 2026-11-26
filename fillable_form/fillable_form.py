@@ -42,6 +42,8 @@ from .types import (
 
 logger = logging.getLogger(__name__)
 
+MATERIAL_ICONS_URL = "https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+
 
 def _strip_html(text: str) -> str:
     """Reduce HTML to searchable plain text; script/style contents are dropped."""
@@ -66,6 +68,11 @@ class FillableFormXBlock(XBlock):
         scope=Scope.settings,
         help=_("Display name for this component in Studio"),
     )
+    icon = String(
+        default="edit",
+        scope=Scope.settings,
+        help=_("Material Icons (outlined) name of the icon shown next to the title"),
+    )
     instructions = String(
         default="",
         scope=Scope.settings,
@@ -89,6 +96,22 @@ class FillableFormXBlock(XBlock):
         default=False,
         scope=Scope.settings,
         help=_("When checked, a download button appears on this field"),
+    )
+    color_variant = String(
+        default="default",
+        scope=Scope.settings,
+        help=_(
+            "Id of the colour variant applied to the block. "
+            '"default" uses the block\'s default colours.'
+        ),
+    )
+    download_button_info = String(
+        default=_(
+            "Save your journal entries from this course as a single PDF "
+            "and see how your perspective changed."
+        ),
+        scope=Scope.settings,
+        help=_("Text shown in the download card next to the download button"),
     )
     pdf_order = Integer(
         default=0,
@@ -131,6 +154,19 @@ class FillableFormXBlock(XBlock):
             or _("Student")
         )
 
+    @staticmethod
+    def _xblock_react_config() -> dict[str, str]:
+        """
+        Config consumed by @opencraft/xblock-react-utils' createXBlockRoot,
+        which uses it to load the Paragon theme into the block's shadow DOM.
+        """
+        return {
+            "mfe_config_api": (
+                f"{getattr(settings, 'LMS_ROOT_URL', '')}"
+                "/api/mfe_config/v1?mfe=learning"
+            ),
+        }
+
     def _render_fragment(
         self,
         div_prefix: str,
@@ -138,20 +174,17 @@ class FillableFormXBlock(XBlock):
         js_initializer: str,
         init_data: BaseModel,
         div_class: str = "",
-        css_path: str | None = None,
     ) -> Fragment:
-        """Build a Fragment with the standard CSS/JS loading pattern."""
+        """Build a Fragment that mounts a React bundle.
+        """
         fragment = Fragment()
+        # Font for the Material Icons; its CSS class is redefined in our
+        # stylesheet because the page CSS does not reach the shadow DOM.
+        fragment.add_resource_url(MATERIAL_ICONS_URL, "text/css", "head")
         class_attr = f' class="{div_class}"' if div_class else ""
         fragment.add_content(
             f'<div id="{div_prefix}-{self.scope_ids.usage_id}"{class_attr}></div>'
         )
-
-        resolved_css_path = css_path or (
-            "static/css/fillable_form_studio.css" if self._is_legacy_studio()
-            else "static/css/fillable_form.css"
-        )
-        fragment.add_css_url(self.runtime.local_resource_url(self, resolved_css_path))
         fragment.add_javascript_url(
             self.runtime.local_resource_url(self, js_bundle)
         )
@@ -168,10 +201,14 @@ class FillableFormXBlock(XBlock):
 
         init_data = LearnerInitData(
             block_id=str(self.scope_ids.usage_id),
+            display_name=self.display_name,
+            icon=self.icon,
             field_label=self.field_label,
             instructions=self.instructions,
             current_text=current_text,
             show_download_button=self.show_download_button,
+            download_button_info=self.download_button_info,
+            color_variant=self.color_variant,
             in_course_context=self._course_key() is not None,
             handler_urls={
                 "save_response": self.runtime.handler_url(
@@ -182,6 +219,7 @@ class FillableFormXBlock(XBlock):
                 ),
             },
             locale=get_language(),
+            config=self._xblock_react_config(),
         )
 
         return self._render_fragment(
@@ -189,7 +227,6 @@ class FillableFormXBlock(XBlock):
             "static/js/fillable_form_learner.js",
             "FillableFormLearner",
             init_data,
-            css_path="static/css/fillable_form.css",
         )
 
     @XBlock.json_handler
@@ -237,6 +274,7 @@ class FillableFormXBlock(XBlock):
         response_map = get_form_group_responses(
             django_user, course_key, [field.usage_key for field in fields]
         )
+        unit_names = self._get_unit_names(course_key, [field.usage_key for field in fields])
 
         form_data = FormGroupData(
             form_group_id=self.form_group_id,
@@ -246,6 +284,7 @@ class FillableFormXBlock(XBlock):
                     "field_label": f.field_label,
                     "instructions": f.instructions,
                     "response_text": response_map.get(str(f.usage_key), ""),
+                    "unit_name": unit_names.get(str(f.usage_key), ""),
                 }
                 for f in fields
             ],
@@ -288,6 +327,32 @@ class FillableFormXBlock(XBlock):
             content_disposition=f'attachment; filename="{filename}.pdf"',
         )
 
+    @staticmethod
+    def _get_unit_names(course_key: CourseKey, usage_keys: list[Any]) -> dict[str, str]:
+        """Map each usage key to the display name of the unit that contains it.
+
+        Fields whose unit can't be found (e.g. deleted blocks still in the registry)
+        are left out. Outside edx-platform (no modulestore) the map is empty.
+        """
+        try:
+            from xmodule.modulestore.django import modulestore
+            from xmodule.modulestore.exceptions import ItemNotFoundError
+        except ImportError:
+            return {}
+
+        store = modulestore()
+        unit_names = {}
+        # bulk_operations caches the course structure, so each lookup doesn't hit the database.
+        with store.bulk_operations(course_key):
+            for usage_key in usage_keys:
+                try:
+                    parent_key = store.get_parent_location(usage_key)
+                    if parent_key:
+                        unit_names[str(usage_key)] = store.get_item(parent_key).display_name_with_default
+                except ItemNotFoundError:
+                    continue
+        return unit_names
+
     def _course_key(self) -> CourseKey | None:
         """Return the containing course key, or None outside a course (e.g. content libraries)."""
         context_key = self.scope_ids.usage_id.context_key
@@ -300,11 +365,14 @@ class FillableFormXBlock(XBlock):
         init_data = StudioInitData(
             block_id=str(self.scope_ids.usage_id),
             display_name=self.display_name,
+            icon=self.icon,
             instructions=self.instructions,
             form_group_id=self.form_group_id,
             form_group_options=get_form_group_options(course_key) if course_key else [],
             field_label=self.field_label,
             show_download_button=self.show_download_button,
+            download_button_info=self.download_button_info,
+            color_variant=self.color_variant,
             pdf_order=self.pdf_order,
             handler_urls={
                 "studio_submit": self.runtime.handler_url(
@@ -312,6 +380,7 @@ class FillableFormXBlock(XBlock):
                 ),
             },
             locale=get_language(),
+            config=self._xblock_react_config(),
         )
 
         return self._render_fragment(
@@ -332,10 +401,13 @@ class FillableFormXBlock(XBlock):
         validated = StudioSaveData.model_validate(data)
 
         self.display_name = validated.display_name
+        self.icon = validated.icon
         self.instructions = validated.instructions
         self.form_group_id = validated.form_group_id
         self.field_label = validated.field_label
         self.show_download_button = validated.show_download_button
+        self.download_button_info = validated.download_button_info
+        self.color_variant = validated.color_variant
         self.pdf_order = validated.pdf_order
 
         course_key = self._course_key()
@@ -377,8 +449,3 @@ class FillableFormXBlock(XBlock):
 
     # Alias needed for client's "Data Bricks" indexer project.
     student_view_data = index_dictionary
-
-    @staticmethod
-    def _is_legacy_studio() -> bool:
-        """Detect whether we're rendering inside legacy Studio (not MFE)."""
-        return not getattr(settings, "ENABLE_STUDIO_MFE", False)

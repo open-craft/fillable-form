@@ -31,6 +31,7 @@ class FormFieldData(BaseModel):
     field_label: str
     instructions: str
     response_text: str
+    unit_name: str = ""
 
 
 class FormGroupData(BaseModel):

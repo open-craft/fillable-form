@@ -25,14 +25,6 @@ export const learnerMessages = defineMessages({
     id: 'fillable.form.learner.fallback.label',
     defaultMessage: 'Form field',
   },
-  downloadHeading: {
-    id: 'fillable.form.learner.download.heading',
-    defaultMessage: 'Download Exercise',
-  },
-  downloadDescription: {
-    id: 'fillable.form.learner.download.description',
-    defaultMessage: 'Your response is part of a collection. Click Download to save them all as a PDF.',
-  },
   downloadButton: {
     id: 'fillable.form.learner.download.button',
     defaultMessage: 'Download PDF',
@@ -40,10 +32,6 @@ export const learnerMessages = defineMessages({
   previewNotice: {
     id: 'fillable.form.learner.preview.notice',
     defaultMessage: 'Preview only — responses are saved when this block is used inside a course.',
-  },
-  downloadUnavailable: {
-    id: 'fillable.form.learner.download.unavailable',
-    defaultMessage: 'PDF download is available when this block is used inside a course.',
   },
 });
 
@@ -67,6 +55,34 @@ export const studioMessages = defineMessages({
   labelDisplayName: {
     id: 'fillable.form.studio.label.display.name',
     defaultMessage: 'Display Name',
+  },
+  labelIcon: {
+    id: 'fillable.form.studio.label.icon',
+    defaultMessage: 'Icon',
+  },
+  helpIcon: {
+    id: 'fillable.form.studio.help.icon',
+    defaultMessage: 'Icon shown next to the title.',
+  },
+  buttonChooseIcon: {
+    id: 'fillable.form.studio.button.choose.icon',
+    defaultMessage: 'Choose icon',
+  },
+  labelColorVariant: {
+    id: 'fillable.form.studio.label.color.variant',
+    defaultMessage: 'Color variant',
+  },
+  helpColorVariant: {
+    id: 'fillable.form.studio.help.color.variant',
+    defaultMessage: 'Choose a color variant. These color combinations are set by your site operator.',
+  },
+  defaultColorVariant: {
+    id: 'fillable.form.studio.default.color.variant',
+    defaultMessage: 'Default',
+  },
+  unavailableColorVariant: {
+    id: 'fillable.form.studio.unavailable.color.variant',
+    defaultMessage: 'The saved color variant "{variant}" isn\'t available in this theme, so the default colors are shown. The saved value is kept.',
   },
   labelInstructions: {
     id: 'fillable.form.studio.label.instructions',
@@ -111,6 +127,14 @@ export const studioMessages = defineMessages({
   labelShowDownload: {
     id: 'fillable.form.studio.label.show.download',
     defaultMessage: 'Show PDF download button on this field',
+  },
+  labelDownloadButtonInfo: {
+    id: 'fillable.form.studio.label.download.button.info',
+    defaultMessage: 'Download Card Text',
+  },
+  helpDownloadButtonInfo: {
+    id: 'fillable.form.studio.help.download.button.info',
+    defaultMessage: 'Text shown next to the PDF download button.',
   },
   buttonSave: {
     id: 'fillable.form.studio.button.save',

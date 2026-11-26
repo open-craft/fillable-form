@@ -6,6 +6,9 @@ import { postJson } from '../common/api';
 import { StudioConfig, HandlerResponse } from '../common/types';
 import { studioMessages } from '../common/messages';
 import { TinyMceEditor } from './TinyMceEditor';
+import { IconSelectorButton } from './IconSelectorButton';
+import { ColorVariantSelector } from './ColorVariantSelector';
+import { COLOR_VARIANTS, findColorVariant, isDefaultColorVariant } from '../common/variants';
 
 const NOTIFY_SAVE = 'save';
 const NOTIFY_ERROR = 'error';
@@ -14,23 +17,26 @@ const NOTIFY_CANCEL = 'cancel';
 interface StudioViewProps {
   initData: StudioConfig;
   runtime: {
-    notify?: (action: string, data?: Record<string, unknown>) => void;
+    notify?: (action: string, data: object) => void;
   };
 }
 
 const fieldId = (blockId: string, prefix: string) => `${prefix}-${blockId}`;
 
 export function StudioView({ initData, runtime }: StudioViewProps) {
-  const { block_id, display_name, instructions, form_group_id,
+  const { block_id, display_name, icon, instructions, form_group_id,
           form_group_options, field_label, show_download_button,
-          pdf_order, handler_urls } = initData;
+          download_button_info, color_variant, pdf_order, handler_urls } = initData;
 
   const intl = useIntl();
   const [displayName, setDisplayName] = useState(display_name);
+  const [selectedIcon, setSelectedIcon] = useState(icon);
   const [instructionsText, setInstructionsText] = useState(instructions);
   const [formGroupId, setFormGroupId] = useState(form_group_id);
   const [fieldLabel, setFieldLabel] = useState(field_label);
   const [showDownloadButton, setShowDownloadButton] = useState(show_download_button);
+  const [downloadButtonInfo, setDownloadButtonInfo] = useState(download_button_info);
+  const [colorVariant, setColorVariant] = useState(color_variant);
   const [pdfOrder, setPdfOrder] = useState<string>(String(pdf_order));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,10 +81,13 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
         handler_urls.studio_submit,
         {
           display_name: displayName,
+          icon: selectedIcon,
           instructions: instructionsText,
           form_group_id: formGroupId,
           field_label: fieldLabel,
           show_download_button: showDownloadButton,
+          download_button_info: downloadButtonInfo,
+          color_variant: colorVariant,
           pdf_order: parsedPdfOrder,
         },
       );
@@ -115,6 +124,45 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
             }
           />
         </Form.Group>
+
+        <Form.Group>
+          <Form.Label htmlFor={fieldId(block_id, 'icon')}>
+            {intl.formatMessage(studioMessages.labelIcon)}
+          </Form.Label>
+          <Form.Control.Feedback>
+            {intl.formatMessage(studioMessages.helpIcon)}
+          </Form.Control.Feedback>
+          <IconSelectorButton
+            id={fieldId(block_id, 'icon')}
+            icon={selectedIcon}
+            onChange={setSelectedIcon}
+            buttonLabel={intl.formatMessage(studioMessages.buttonChooseIcon)}
+          />
+        </Form.Group>
+
+        {COLOR_VARIANTS.length > 0 && (
+          <Form.Group>
+            <Form.Label>
+              {intl.formatMessage(studioMessages.labelColorVariant)}
+            </Form.Label>
+            <Form.Control.Feedback>
+              {intl.formatMessage(studioMessages.helpColorVariant)}
+            </Form.Control.Feedback>
+            <ColorVariantSelector
+              name={fieldId(block_id, 'color-variant')}
+              variants={COLOR_VARIANTS}
+              value={colorVariant}
+              onChange={setColorVariant}
+              ariaLabel={intl.formatMessage(studioMessages.labelColorVariant)}
+              defaultLabel={intl.formatMessage(studioMessages.defaultColorVariant)}
+            />
+            {!isDefaultColorVariant(colorVariant) && !findColorVariant(colorVariant) && (
+              <p className="fillable-form-swatch-unavailable" role="status">
+                {intl.formatMessage(studioMessages.unavailableColorVariant, { variant: colorVariant })}
+              </p>
+            )}
+          </Form.Group>
+        )}
 
         <Form.Group>
           <Form.Label htmlFor={fieldId(block_id, 'instructions')}>
@@ -198,6 +246,25 @@ export function StudioView({ initData, runtime }: StudioViewProps) {
             {intl.formatMessage(studioMessages.labelShowDownload)}
           </Form.Checkbox>
         </Form.Group>
+
+        {showDownloadButton && (
+          <Form.Group>
+            <Form.Label htmlFor={fieldId(block_id, 'download-button-info')}>
+              {intl.formatMessage(studioMessages.labelDownloadButtonInfo)}
+            </Form.Label>
+            <Form.Control.Feedback>
+              {intl.formatMessage(studioMessages.helpDownloadButtonInfo)}
+            </Form.Control.Feedback>
+            <Form.Control
+              id={fieldId(block_id, 'download-button-info')}
+              type="text"
+              value={downloadButtonInfo}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setDownloadButtonInfo(e.target.value)
+              }
+            />
+          </Form.Group>
+        )}
 
         {error && (
           <div className="fillable-form-studio-error">{error}</div>

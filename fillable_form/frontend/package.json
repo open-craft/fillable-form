@@ -8,8 +8,12 @@
     "test": "jest"
   },
   "dependencies": {
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@opencraft/xblock-react-utils": "^0.1.1",
     "@openedx/paragon": "^23.19.1",
     "@tinymce/tinymce-react": "^5.1.1",
+    "fuse.js": "^7.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intl": "^6.6.3",
@@ -17,8 +21,9 @@
     "tinymce": "^7.2.1"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^6.1.0",
-    "@testing-library/react": "^14.1.0",
+    "@testing-library/react": "^16.3.3",
     "@types/jest": "^30.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
@@ -26,9 +31,6 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
-    "mini-css-extract-plugin": "^2.7.0",
-    "postcss-loader": "^7.3.0",
-    "postcss-prefix-selector": "^2.1.1",
     "sass": "^1.99.0",
     "sass-loader": "^16.0.8",
     "style-loader": "^3.3.0",
@@ -36,7 +38,6 @@
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.90.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-fix-style-only-entries": "^0.6.1"
+    "webpack-cli": "^5.1.4"
   }
 }
