@@ -182,7 +182,6 @@
   display: block;
   font-size: 13px;
   height: 42px;
-  max-width: 535px;
   padding: var(--pgn-spacing-form-input-padding-y, 0.55rem) var(--pgn-spacing-form-input-padding-x, 0.75rem);
   width: 100%;
 }
